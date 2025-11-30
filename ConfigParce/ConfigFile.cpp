@@ -39,33 +39,163 @@ int ConfigFile::OpeningFile(const char *FileName)
     return (0);
 }
 
-std::vector<std::string> splitingConfg(const std::string &str, std::string delims)
-{
-    std::vector<std::string> splited;
-    std::stringstream ss(str);
-    std::string tokenTaker;
 
-    size_t start = str.find_first_not_of(delims);
-    while (start != std::string::npos)// check o delimeters
+std::vector<std::string> splitingConfg(const std::string &str)
+{
+    std::vector<std::string> result;
+    std::string current;
+
+    for (size_t i = 0; i < str.size(); ++i)
     {
-        size_t end = str.find_first_of(delims, start);
-        splited.push_back(str.substr(start, end - start));
-        start = str.find_first_not_of(delims, end);
+        char c = str[i];
+
+        // -------------------------
+        // 1. Handle single quotes
+        // -------------------------
+        if (c == '\'')
+        {
+            if (!current.empty()) {
+                result.push_back(current);
+                current.clear();
+            }
+
+            i++; // move past ' 
+            while (i < str.size() && str[i] != '\'')
+            {
+                current += str[i];
+                i++;
+            }
+
+            if (i >= str.size())
+            {
+                std::cerr << "ERROR: Unterminated single quote\n";
+                exit(1);
+            }
+
+            // push completed quoted token
+            result.push_back(current);
+            current.clear();
+            continue;
+        }
+
+        // -------------------------
+        // 2. Handle double quotes
+        // -------------------------
+        // if (c == '\"')
+        // {
+        //     if (!current.empty()) {
+        //         result.push_back(current);
+        //         current.clear();
+        //     }
+
+        //     i++; // move past "
+        //     while (i < str.size() && str[i] != '\"')
+        //     {
+        //         current += str[i];
+        //         i++;
+        //     }
+
+        //     if (i >= str.size())
+        //     {
+        //         std::cerr << "ERROR: Unterminated double quote\n";
+        //         exit(1);
+        //     }
+
+        //     result.push_back(current);
+        //     current.clear();
+        //     continue;
+        // }
+
+        // -------------------------
+        // 3. Block start "{"
+        // -------------------------
+        if (c == '{')
+        {
+            if (!current.empty())
+            {
+                result.push_back(current);
+                current.clear();
+            }
+            result.push_back("{");
+            continue;
+        }
+
+        // -------------------------
+        // 4. Block end "}"
+        // -------------------------
+        if (c == '}')
+        {
+            if (!current.empty())
+            {
+                result.push_back(current);
+                current.clear();
+            }
+            result.push_back("}");
+            continue;
+        }
+        // if (c == ';')
+        // {
+        //     if (!current.empty())
+        //     {
+        //         result.push_back(current);
+        //         current.clear();
+        //     }
+        //     result.push_back(";");
+        //     continue;
+        // }
+        // -------------------------
+        // 5. Whitespace means end of token
+        // -------------------------
+        // if (std::isspace(c))
+        // {
+        //     if (!current.empty())
+        //     {
+        //         result.push_back(current);
+        //         current.clear();
+        //     }
+        //     continue;
+        // }
+
+        // -------------------------
+        // 6. Normal character
+        // -------------------------
+        current += c;
     }
-    return(splited);
+
+    // push last token
+    if (!current.empty())
+        result.push_back(current);
+
+    return result;
 }
 
 
 
-void ConfigFile::TakerD(std::vector<std::string>helo, int IndexStart ,int IndexEnd )
-{
-    while (IndexEnd >= IndexStart)
-    {
-        std::cout << helo[IndexStart];
-        IndexStart++;
-        std::cout << std::endl;
-    }
+
+
+bool ServerDirective(const std::string& token) {
+    static const char* dirs[] = {
+        "listen", "server_name", "root", "index",
+        "error_page", "client_max_body_size", "return"
+    };
+    for (int i = 0; i < 7; i++)
+        if (token == dirs[i])
+            return true;
+    return false;
 }
+
+bool LocationDirective(const std::string& token) {
+    static const char* dirs[] = {
+        "allow_methods", "autoindex", "upload_path",
+        "cgi_extension", "cgi_path", "redirection", "alias"
+    };
+    for (int i = 0; i < 7; i++)
+        if (token == dirs[i])
+            return true;
+    return false;
+}
+
+
 
 int ConfigFile::TakeData()
 {
@@ -83,33 +213,61 @@ int ConfigFile::TakeData()
         }
         i++;
     }
-    // std::cout << fdline;
+    //std::cout << fdline;
 
-    // now it need to be tokenzed into vector
-    std::vector<std::string> helo = splitingConfg(fdline, " \n\t");
-    // so tokens is here
-    int flag = 0;
-    int IndexStart = 0;
-    int IndexEnd = 0;
-    for (size_t i = 0; i < helo.size(); ++i)
+    // split by " \n\t"
+    std::vector<std::string> helo = splitingConfg(fdline);
+
+    std::vector<std::string> stack;
+    std::vector<size_t> StartIndex;
+
+    for (int i = 0; i < helo.size(); ++i)
     {
-        if (helo[i] == "server")
+        std::string token = helo[i];
+        // std::cout << token << std::endl;
+
+        if (token == "{")
         {
-            std::cout << "start  " << helo[i] << "  index is" << i<< std::endl;
-            if (helo[++i] == "{")
+            // block start, push a placeholder (could store the preceding directive if exists)
+            std::string blockName = (i > 0) ? helo[i - 1] : "anonymous";
+            stack.push_back(blockName);
+            StartIndex.push_back(i);
+            continue;
+        }
+
+        if (token == "}")
+        {
+            if (stack.empty())
             {
-                flag = 1;
-                IndexStart  = i - 1;
+                std::cerr << "ERROR: Unexpected '}' at index " << i << std::endl;
+                exit(1);
             }
+            std::string finished = stack.back();
+            size_t start = StartIndex.back();
+            stack.pop_back();
+            StartIndex.pop_back();
+
+            // std::cout << "END BLOCK: " << finished << " from " << start << " to " << i << std::endl;
+            continue;
         }
-        else if (flag && helo[i] == "}")
-        {
-            IndexEnd = i;
-            std::cout << "end  ->" << IndexEnd << "  index is ->" << IndexStart << std::endl;
-            flag = 0;
-            // handel the server pointer start / end (data where it will be taking)
-            TakerD(helo, IndexStart , IndexEnd );
-        }
+    }
+
+    // At the end, check for unclosed blocks
+    if (!stack.empty())
+    {
+        std::cerr << "ERROR: Unclosed block(s) detected: ";
+        for (auto &b : stack) std::cerr << b << " ";
+        std::cerr << std::endl;
+        exit(1);
+    }
+                std::cerr << " eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\n";
+
+    // check the ; at the end of string
+
+    for (int i = 0; i < helo.size(); ++i)
+    {
+        std::cout << "the index issssss                " << i << std::endl;
+        std::cout << helo[i] << std::endl;
     }
     return 0;
 
