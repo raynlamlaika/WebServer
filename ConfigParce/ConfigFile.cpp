@@ -196,6 +196,34 @@ bool LocationDirective(const std::string& token) {
 }
 
 
+bool isDirevative(std::string str)
+{
+    if (str.find("listen") != std::string::npos)
+        return 1;
+    return 0;
+}
+
+std::string Taker(const std::vector<std::string>& helo, int i)
+{
+    std::string result;
+
+    // Safety check
+    if (i < 0 || i >= (int)helo.size())
+        return result;
+
+    for (int k = i; k < (int)helo.size(); k++)
+    {
+        result += helo[k];
+
+        // Stop as soon as we find a token ending with ';'
+        if (!helo[k].empty() && helo[k].find(";") != std::string::npos)
+            return result;
+
+        result += " "; // space between tokens if needed
+    }
+
+    return result; // if no ';' found, return full concatenation
+}
 
 int ConfigFile::TakeData()
 {
@@ -266,9 +294,18 @@ int ConfigFile::TakeData()
 
     for (int i = 0; i < helo.size(); ++i)
     {
-        std::cout << "the index issssss                " << i << std::endl;
+        // std::cout << "" << i << std::endl;
         std::cout << helo[i] << std::endl;
+        if (isDirevative(helo[i]))
+        {
+            // loop into the next string and see the if there is ; if it come to } it throw exaception
+            std::cerr << " eeeeeeeeeeerrrrrrrrrrrrrrrrrrrrrrreeeeeeeeeeeeeeeeeeeeeeeeeee\n";
+            std::cout << "heheheh->:" << helo[i] << std::endl;
+            
+            std::string value = Taker(helo, i);
+            std::cout << "heheheh VAllle->:" << value << std::endl;
+            exit(1);
+        }
     }
     return 0;
-
 }

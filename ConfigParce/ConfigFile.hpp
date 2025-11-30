@@ -14,7 +14,11 @@ class ConfigFile
 // cofig file collected data
 private:
     std::string fdline;
-
+    std::string include;
+    std::string log_format;
+    std::string listen;
+    std::string server_name;
+    
 
 
     
