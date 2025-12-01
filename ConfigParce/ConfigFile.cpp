@@ -1,5 +1,6 @@
 #include "ConfigFile.hpp"
-
+#include <string>
+#include <iostream>
 ConfigFile::ConfigFile()
 {
     this->fdline = "";
@@ -133,16 +134,16 @@ std::vector<std::string> splitingConfg(const std::string &str)
             result.push_back("}");
             continue;
         }
-        // if (c == ';')
-        // {
-        //     if (!current.empty())
-        //     {
-        //         result.push_back(current);
-        //         current.clear();
-        //     }
-        //     result.push_back(";");
-        //     continue;
-        // }
+        if (c == '\n')
+        {
+            if (!current.empty())
+            {
+                result.push_back(current);
+                current.clear();
+            }
+            result.push_back("\n");
+            continue;
+        }
         // -------------------------
         // 5. Whitespace means end of token
         // -------------------------
@@ -196,10 +197,28 @@ bool LocationDirective(const std::string& token) {
 }
 
 
-bool isDirevative(std::string str)
+int isDirevative(std::string str)
 {
-    if (str.find("listen") != std::string::npos)
-        return 1;
+     static const char* dirs[] =
+     {
+        "listen", "server_name", "root", "index",
+        "error_page", "client_max_body_size", "return"};
+    static const char* loc[] = {
+        "allow_methods", "autoindex", "upload_path",
+        "cgi_extension", "cgi_path", "redirection", "alias","proxy_pass", "proxy_set_header", "try_files"
+    };
+    for (int i = 0; dirs[i] ; i++)
+    {
+
+        if (str.find(dirs[i]) != std::string::npos)
+            return  1;
+    }
+    for (int i = 0; loc[i] ; i++)
+    {
+
+        if (str.find(loc[i]) != std::string::npos)
+            return  2;
+    }
     return 0;
 }
 
@@ -224,7 +243,15 @@ std::string Taker(const std::vector<std::string>& helo, int i)
 
     return result; // if no ';' found, return full concatenation
 }
-
+std::string removeSpaces(const std::string& input) {
+    std::string result = "";
+    for (size_t i = 0; i < input.length(); ++i) {
+        if (input[i] != ' ') {
+            result += input[i];
+        }
+    }
+    return result;
+}
 int ConfigFile::TakeData()
 {
     // remove the commantes
@@ -288,23 +315,32 @@ int ConfigFile::TakeData()
         std::cerr << std::endl;
         exit(1);
     }
-                std::cerr << " eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\n";
-
     // check the ; at the end of string
 
     for (int i = 0; i < helo.size(); ++i)
     {
+        helo[i] = removeSpaces(helo[i]);
         // std::cout << "" << i << std::endl;
-        std::cout << helo[i] << std::endl;
-        if (isDirevative(helo[i]))
+        if (helo[i] == "\n")
+            ;//std::cout << "the hole string is [\"" << helo[i] << "\"]\n"; 
+        // check if the  server  block first
+        
+        else if ((helo[i]).find("server") != std::string::npos)
         {
-            // loop into the next string and see the if there is ; if it come to } it throw exaception
-            std::cerr << " eeeeeeeeeeerrrrrrrrrrrrrrrrrrrrrrreeeeeeeeeeeeeeeeeeeeeeeeeee\n";
-            std::cout << "heheheh->:" << helo[i] << std::endl;
+            // check if there is{ in the next token
+            int j = i + 1;
+            if (helo[j] == "{")
+            {
+                j++;
+                while (helo[j] == "\n")
+                    j++;
+                if (isDirevative(helo[j]))
+                {
+                    std::string value = Taker(helo, j);
+                    std::cout << "\t\t\t server -->[\"" << value << "\"]\n"; 
+                }
+            }
             
-            std::string value = Taker(helo, i);
-            std::cout << "heheheh VAllle->:" << value << std::endl;
-            exit(1);
         }
     }
     return 0;
