@@ -9,21 +9,37 @@
 
 
 
+struct ServerConfig {
+    std::string listen;
+    std::string server_name;
+    std::string root;
+    std::string index;
+    std::string error_page;
+    std::string client_max_body_size;
+    bool autoindex;
+};
+
+
 class ConfigFile
 {
 // cofig file collected data
 private:
+    std::vector<ServerConfig> servers;
+
+    
+
     std::string fdline;
-    std::string include;
-    std::string log_format;
-    std::string listen;
-    std::string server_name;
+    std::vector<std::string> serverOnly;
+    std::vector<std::string> locationOnly;
+    std::vector<std::string> common;
+
     
 
 
     
 
 public:
+    ServerConfig defaultServer;
     ConfigFile();
     ~ConfigFile();
 

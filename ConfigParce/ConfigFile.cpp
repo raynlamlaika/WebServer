@@ -1,10 +1,35 @@
 #include "ConfigFile.hpp"
 #include <string>
 #include <iostream>
+
+
+
 ConfigFile::ConfigFile()
 {
+    std::vector <std::string> serverOnly = {
+        "listen",
+        "server_name",
+        "error_page",
+        "client_max_body_size",
+        "root",
+        "index",
+        "autoindex"
+    };
+    std::vector <std::string> locationOnly = {"allowed_methods", "upload_pass"};
+
+    std::vector <std::string> common = {"root", "index", "autoindex", "error_page"};
+
     this->fdline = "";
+
+    defaultServer.listen = "80";
+    defaultServer.server_name = "localhost";
+    defaultServer.root = "/var/www/html";
+    defaultServer.index = "index.html";
+    defaultServer.error_page = "/error.html";
+    defaultServer.client_max_body_size = "1M";
+    defaultServer.autoindex = false;
     std::cout << "constracture is called \n";
+
 }
 
 ConfigFile::~ConfigFile()
@@ -147,15 +172,15 @@ std::vector<std::string> splitingConfg(const std::string &str)
         // -------------------------
         // 5. Whitespace means end of token
         // -------------------------
-        // if (std::isspace(c))
-        // {
-        //     if (!current.empty())
-        //     {
-        //         result.push_back(current);
-        //         current.clear();
-        //     }
-        //     continue;
-        // }
+        if (std::isspace(c))
+        {
+            if (!current.empty())
+            {
+                result.push_back(current);
+                current.clear();
+            }
+            continue;
+        }
 
         // -------------------------
         // 6. Normal character
@@ -325,23 +350,61 @@ int ConfigFile::TakeData()
             ;//std::cout << "the hole string is [\"" << helo[i] << "\"]\n"; 
         // check if the  server  block first
         
-        else if ((helo[i]).find("server") != std::string::npos)
+        else if (helo[i] == "server")
         {
-            // check if there is{ in the next token
             int j = i + 1;
-            if (helo[j] == "{")
+
+            // Check opening brace
+            if (j < helo.size() && helo[j] == "{")
             {
                 j++;
-                while (helo[j] == "\n")
+
+                // Skip empty tokens
+                while (j < helo.size() && (helo[j].empty() || helo[j] == "\n"))
                     j++;
-                if (isDirevative(helo[j]))
+
+                // std::cout << "this sis the location or nooot->>>>>>> " << helo[j] <<  std::endl;
+                // helo[j] = removeSpaces(helo[j]);
+                
+
+
+                // Handle directives inside server block
+                while (j < helo.size() && helo[j] != "}")
                 {
-                    std::string value = Taker(helo, j);
-                    std::cout << "\t\t\t server -->[\"" << value << "\"]\n"; 
+                    if (isDirevative(helo[j]))
+                    {
+                        std::string value = Taker(helo, j);
+                        std::cout << "\t\t\t server --> [\"" << value << "\"]\n";
+                    }
+                    if (helo[j] == "location")
+                    {
+                        j++;
+                        j++;
+                        if (j < helo.size() && helo[j] == "{")
+                        {
+                            j++;
+                            while (j < helo.size() && (helo[j].empty() || helo[j] == "\n"))
+                                j++;
+
+                            // Handle directives inside server block
+                            while (j < helo.size() && helo[j] != "}")
+                            {
+                                if (isDirevative(helo[j]))
+                                {
+                                    std::string value = Taker(helo, j);
+                                    std::cout << "\t\t\t location --> [\"" << value << "\"]\n";
+                                }
+                                j++;
+                            }
+                        }
+                    }
+                    j++;
                 }
+
+                i = j; // skip to the end of server block
             }
-            
         }
+
     }
     return 0;
 }
