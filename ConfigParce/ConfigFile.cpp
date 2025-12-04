@@ -21,7 +21,7 @@ ConfigFile::ConfigFile()
 
     this->fdline = "";
 
-    defaultServer.listen = "80";
+    defaultServer.listen = "8000";
     defaultServer.server_name = "localhost";
     defaultServer.root = "/var/www/html";
     defaultServer.index = "index.html";

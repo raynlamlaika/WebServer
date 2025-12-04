@@ -1,7 +1,8 @@
 
 
-
+#include "unistd.h"
 #include "ConfigParce/ConfigFile.hpp"
+#include "Server/Server.hpp"
 
 void printServerConfig(const ServerConfig& cfg)
 {
@@ -15,6 +16,7 @@ void printServerConfig(const ServerConfig& cfg)
     std::cout << "autoindex: " << (cfg.autoindex ? "on" : "off") << "\n";
     std::cout << "--------------------------------\n";
 }
+
 int main(int ac, char **av)
 {
     ConfigFile *Config = new ConfigFile();
@@ -32,6 +34,16 @@ int main(int ac, char **av)
     ConfigFile Conf;
     ServerConfig bb = Conf.defaultServer;
     printServerConfig(bb);
+
+
+    Server k;
+    int server_fd = k.createServerSocket(bb);
+
+    std::cout << "Server running...\n";
+    k.RunServer(server_fd);
+
+    close(server_fd);
+
     delete Config;
     return 0;
 }

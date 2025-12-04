@@ -13,7 +13,7 @@ public:
     ~Server();
 
 
-    void CreatServerSockets(ServerConfig& cfg);// add const later
+    int createServerSocket(ServerConfig& cfg);// add const later
     void RunServer(int server_fd);
 };
 
