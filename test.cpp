@@ -7,6 +7,8 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <vector>
+#include <poll.h>
 #include <arpa/inet.h>
 
 #define READINGBUFFER 1024
@@ -24,6 +26,8 @@ int  server(int port)
 	// protocol 0 to auto spicify protocol UDP ? TCP 
 
 	int socketfd =  socket(AF_INET, SOCK_STREAM, 0);
+	int  opt = 1;
+	setsockopt(socketfd,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt));
 	if (socketfd < 0)
 		return	perror("bref error in the socket creation: "),12;
 
@@ -47,29 +51,70 @@ int  server(int port)
 	listen(socketfd, 5);// i think here it will be the max fd
 	
 
+	struct pollfd first;
+	first.events =  POLLIN;
+	first.fd  = socketfd;
+	first.revents = 0;
 
+	std::vector<struct pollfd> clients;
+	clients.push_back(first);
 	while (true)
 	{
-		struct sockaddr_in client_addr;
-		socklen_t client_len = sizeof(client_addr);
-		int acceptint = accept(socketfd, (struct sockaddr *) &firs , &client_len);
-		if (acceptint < 0)
+		int event =	poll(&clients[0], clients.size(),-1);
+		if (event > 0)
 		{
-			perror("can't tke the client with accest");
-			continue;
+			if (clients[0].revents & POLLIN)
+			{
+				std::cout << "newww clainer" << std::endl;
+				struct sockaddr_in client_addr;
+				socklen_t client_len = sizeof(client_addr);
+				int clientfd = accept(socketfd, (struct sockaddr *) &client_addr , &client_len);
+				if (clientfd < 0)
+				{
+					perror("can't tke the client with accest");
+					continue;
+				}
+
+				struct pollfd cli;
+				cli.fd  = clientfd;
+				cli.events =  POLLIN;
+				cli.revents = 0;
+				clients.push_back(cli);
+			}
+			// Check all connected clients
+			for (size_t i = 1; i < clients.size(); i++)
+			{
+				std::cout << "client is connected" << std::endl;
+				if (clients[i].revents & POLLIN)
+				{
+					char buffer[READINGBUFFER];
+					int r = recv(clients[i].fd, buffer, sizeof(buffer)-1, 0);
+
+					if (r <= 0)
+					{
+						std::cout << "Client disconnected\n";
+						close(clients[i].fd);
+						clients.erase(clients.begin() + i);
+						i--;
+						continue;
+					}
+
+					buffer[r] = '\0';
+					std::cout << "Received: " << buffer << std::endl;
+
+					const char* reply = "Hello from server\n";
+					send(clients[i].fd, reply, strlen(reply), 0);
+				}
+			}
+
+			
 		}
-		char rqBuff[READINGBUFFER];
-		int bytes_read = recv(acceptint, rqBuff, sizeof(rqBuff)-1, 0);
-		if (bytes_read < 0)
-			perror("Recv failed");
-		else
-		{
-			rqBuff[bytes_read] = '\0'; // null terminate so you can print it
-			std::cout << "Received: " << rqBuff << std::endl;
-			const char* reply = "Hello from server\n";
-        	send(acceptint, reply, strlen(reply), 0);
-		}
-		close(acceptint);
+		if (event < 0)
+			;
+		if (event == 0)
+			;
+		
+		// close(acceptint);
 	}
 
     close(socketfd);

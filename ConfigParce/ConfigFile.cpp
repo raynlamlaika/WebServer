@@ -21,12 +21,12 @@ ConfigFile::ConfigFile()
 
     this->fdline = "";
 
-    defaultServer.listen = "8000";
+    defaultServer.listen = {"8000"};
     defaultServer.server_name = "localhost";
     defaultServer.root = "/var/www/html";
     defaultServer.index = "index.html";
     defaultServer.error_page = "/error.html";
-    defaultServer.client_max_body_size = "1M";
+    defaultServer.client_max_body_size = 10000;
     defaultServer.autoindex = false;
     std::cout << "constracture is called \n";
 
@@ -374,7 +374,7 @@ int ConfigFile::TakeData()
                     if (isDirevative(helo[j]))
                     {
                         std::string value = Taker(helo, j);
-                        std::cout << "\t\t\t server --> [\"" << value << "\"]\n";
+                        // std::cout << "\t\t\t server --> [\"" << value << "\"]\n";
                     }
                     if (helo[j] == "location")
                     {
@@ -392,7 +392,7 @@ int ConfigFile::TakeData()
                                 if (isDirevative(helo[j]))
                                 {
                                     std::string value = Taker(helo, j);
-                                    std::cout << "\t\t\t location --> [\"" << value << "\"]\n";
+                                    // std::cout << "\t\t\t location --> [\"" << value << "\"]\n";
                                 }
                                 j++;
                             }

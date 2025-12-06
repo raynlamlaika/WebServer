@@ -8,15 +8,24 @@
 #include <sstream>
 
 
+struct LocationConfig {
+    std::string path;              // e.g. "/images"
+    std::string root;
+    std::string index;
+    bool autoindex;
+    std::vector<LocationConfig> locations;
+};
+
 
 struct ServerConfig {
-    std::string listen;
+    std::vector<std::string> listen;  
     std::string server_name;
     std::string root;
     std::string index;
     std::string error_page;
-    std::string client_max_body_size;
+    int client_max_body_size;
     bool autoindex;
+    std::vector<LocationConfig> locations;
 };
 
 
@@ -25,8 +34,6 @@ class ConfigFile
 // cofig file collected data
 private:
     std::vector<ServerConfig> servers;
-
-    
 
     std::string fdline;
     std::vector<std::string> serverOnly;
