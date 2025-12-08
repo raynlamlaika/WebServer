@@ -1,13 +1,13 @@
 NAME = webServ
 
-SRC =  main.cpp Server/Server.cpp ConfigParce/ConfigFile.cpp
+SRC =  main.cpp Server/Server.cpp ConfigParce/ConfigFile.cpp http/Request.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
 CPP = c++
 CFLAGS = -Wall -Werror -Wextra -std=c++98
 
-HEADER = Server/Server.hpp ConfigParce/ConfigFile.hpp
+HEADER = include/Server.hpp include/ConfigFile.hpp include/Request.hpp
 
 all: $(NAME)
 

@@ -3,12 +3,12 @@
 
 #include <poll.h>
 #include <map>
-#include "../ConfigParce/ConfigFile.hpp"
-
+#include "ConfigFile.hpp"
+#include "Request.hpp"
 
 #define READINGBUFFER 1000
 
-class Server
+class Server : Request
 {
 private:
     int i;

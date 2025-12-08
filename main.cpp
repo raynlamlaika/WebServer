@@ -1,8 +1,8 @@
 
 
 #include "unistd.h"
-#include "ConfigParce/ConfigFile.hpp"
-#include "Server/Server.hpp"
+#include "include/ConfigFile.hpp"
+#include "include/Server.hpp"
 
 
 std::vector<ServerConfig> hard_code(std::vector<ServerConfig> servers)

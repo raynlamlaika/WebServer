@@ -1,4 +1,4 @@
-#include "ConfigFile.hpp"
+#include "../include/ConfigFile.hpp"
 #include <string>
 #include <stdlib.h>
 #include <iostream>

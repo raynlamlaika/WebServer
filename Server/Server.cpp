@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "../include/Server.hpp"
 #include <netinet/in.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -9,7 +9,7 @@
 #include <iostream>
 
 
-Server::Server(){}
+Server::Server() : Request() {}
 Server::~Server(){}
 
 
@@ -265,7 +265,7 @@ int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
                 }
                 buffer[n] = '\0';
                 // the parcing should be in this buffer 'buffer'
-
+                mainRequest(buffer);
                 std::cout << "[DATA FROM " << fds[i].fd << "]\n"
                         << buffer << "\n";
                 // SIMPLE RESPONSE (for now)
