@@ -223,30 +223,7 @@ bool LocationDirective(const std::string& token) {
 }
 
 
-int isDirevative(std::string str)
-{
-     static const char* dirs[] =
-     {
-        "listen", "server_name", "root", "index",
-        "error_page", "client_max_body_size", "return"};
-    static const char* loc[] = {
-        "allow_methods", "autoindex", "upload_path",
-        "cgi_extension", "cgi_path", "redirection", "alias","proxy_pass", "proxy_set_header", "try_files"
-    };
-    for (int i = 0; dirs[i] ; i++)
-    {
 
-        if (str.find(dirs[i]) != std::string::npos)
-            return  1;
-    }
-    for (int i = 0; loc[i] ; i++)
-    {
-
-        if (str.find(loc[i]) != std::string::npos)
-            return  2;
-    }
-    return 0;
-}
 
 std::string Taker(const std::vector<std::string>& helo, int i)
 {
@@ -313,6 +290,48 @@ std::vector<std::string> removeEmptyLines(const std::vector<std::string> &strs)
 
     return cleaned;
 }
+
+
+bool isBlock(std::string str)
+{
+    if (str == "http" || str == "server" || str == "location")
+        return true;
+    return false;
+}
+int isDirevative(std::string str)
+{
+     static const char* dirs[] =
+     {
+        "listen", "server_name", "root", "index",
+        "error_page", "client_max_body_size", "return"};
+    static const char* loc[] = {
+        "allow_methods", "autoindex", "upload_path",
+        "cgi_extension", "cgi_path", "redirection", "alias","proxy_pass", "proxy_set_header", "try_files"
+    };
+    for (int i = 0; dirs[i] ; i++)
+    {
+
+        if (str.find(dirs[i]) != std::string::npos)
+            return  1;
+    }
+    for (int i = 0; loc[i] ; i++)
+    {
+
+        if (str.find(loc[i]) != std::string::npos)
+            return  2;
+    }
+    return 0;
+}    
+bool StartBllock(std::string str)
+{
+    return str =="{" ? true : false;
+}
+bool EndBlock(std::string str)
+{
+    return str =="}" ? true : false;
+}
+
+
 
 
 int ConfigFile::TakeData()
@@ -389,7 +408,48 @@ int ConfigFile::TakeData()
     {
         std::cout << "------------------>" << witout[i] << std::endl;
         
+        if (isBlock(witout[i]))
+        {
+            
+        }
+        else if (isDirevative(witout[i]))
+            ;
+        else if (StartBllock(witout[i]))
+            ;
+        else if (EndBlock(witout[i]))
+            ;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // for (size_t i = 0; i < helo.size(); ++i)
     // {
     //     
