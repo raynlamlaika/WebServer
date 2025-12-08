@@ -31,7 +31,16 @@ struct ServerConfig {
 
 class ConfigFile
 {
+
+
+
+
 // cofig file collected data
+
+
+
+
+
 private:
     std::vector<ServerConfig> servers;
 
@@ -40,10 +49,7 @@ private:
     std::vector<std::string> locationOnly;
     std::vector<std::string> common;
 
-    
 
-
-    
 
 public:
     ServerConfig defaultServer;

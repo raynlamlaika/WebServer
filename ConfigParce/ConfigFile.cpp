@@ -1,33 +1,34 @@
 #include "ConfigFile.hpp"
 #include <string>
+#include <stdlib.h>
 #include <iostream>
 
 
 
 ConfigFile::ConfigFile()
 {
-    std::vector <std::string> serverOnly = {
-        "listen",
-        "server_name",
-        "error_page",
-        "client_max_body_size",
-        "root",
-        "index",
-        "autoindex"
-    };
-    std::vector <std::string> locationOnly = {"allowed_methods", "upload_pass"};
+    // std::vector<std::string> serverOnly = {
+    //     "listen",
+    //     "server_name",
+    //     "error_page",
+    //     "client_max_body_size",
+    //     "root",
+    //     "index",
+    //     "autoindex"
+    // };
+    // std::vector <std::string> locationOnly = {"allowed_methods", "upload_pass"};
 
-    std::vector <std::string> common = {"root", "index", "autoindex", "error_page"};
+    // std::vector <std::string> common = {"root", "index", "autoindex", "error_page"};
 
-    this->fdline = "";
+    // this->fdline = "";
 
-    defaultServer.listen = {"8000"};
-    defaultServer.server_name = "localhost";
-    defaultServer.root = "/var/www/html";
-    defaultServer.index = "index.html";
-    defaultServer.error_page = "/error.html";
-    defaultServer.client_max_body_size = 10000;
-    defaultServer.autoindex = false;
+    // defaultServer.listen = {"8000"};
+    // defaultServer.server_name = "localhost";
+    // defaultServer.root = "/var/www/html";
+    // defaultServer.index = "index.html";
+    // defaultServer.error_page = "/error.html";
+    // defaultServer.client_max_body_size = 10000;
+    // defaultServer.autoindex = false;
     std::cout << "constracture is called \n";
 
 }
@@ -268,6 +269,7 @@ std::string Taker(const std::vector<std::string>& helo, int i)
 
     return result; // if no ';' found, return full concatenation
 }
+
 std::string removeSpaces(const std::string& input) {
     std::string result = "";
     for (size_t i = 0; i < input.length(); ++i) {
@@ -277,6 +279,42 @@ std::string removeSpaces(const std::string& input) {
     }
     return result;
 }
+
+
+// int skipns(std::vector<std::string> strs, int index)
+// {
+//     for (int i =index ; strs[i] ; i++)
+// }
+#include <vector>
+#include <string>
+#include <cctype>
+
+std::vector<std::string> removeEmptyLines(const std::vector<std::string> &strs)
+{
+    std::vector<std::string> cleaned;
+
+    for (size_t i = 0; i < strs.size(); i++)
+    {
+        const std::string &s = strs[i];
+        bool onlySpaces = true;
+
+        for (size_t j = 0; j < s.size(); j++)
+        {
+            if (!std::isspace(s[j]))   // found real character
+            {
+                onlySpaces = false;
+                break;
+            }
+        }
+
+        if (!onlySpaces)               // keep only real lines
+            cleaned.push_back(s);
+    }
+
+    return cleaned;
+}
+
+
 int ConfigFile::TakeData()
 {
     // remove the commantes
@@ -301,7 +339,7 @@ int ConfigFile::TakeData()
     std::vector<std::string> stack;
     std::vector<size_t> StartIndex;
 
-    for (int i = 0; i < helo.size(); ++i)
+    for (size_t i = 0; i < helo.size(); ++i)
     {
         std::string token = helo[i];
         // std::cout << token << std::endl;
@@ -323,7 +361,7 @@ int ConfigFile::TakeData()
                 exit(1);
             }
             std::string finished = stack.back();
-            size_t start = StartIndex.back();
+            // size_t start = StartIndex.back();
             stack.pop_back();
             StartIndex.pop_back();
 
@@ -336,75 +374,85 @@ int ConfigFile::TakeData()
     if (!stack.empty())
     {
         std::cerr << "ERROR: Unclosed block(s) detected: ";
-        for (auto &b : stack) std::cerr << b << " ";
-        std::cerr << std::endl;
+        // for (auto &b : stack) std::cerr << b << " ";
+        // std::cerr << std::endl;
         exit(1);
     }
+    
+
+
+
     // check the ; at the end of string
 
-    for (int i = 0; i < helo.size(); ++i)
+    std::vector<std::string> witout = removeEmptyLines(helo);
+    for (size_t i = 0; i < witout.size(); ++i)
     {
-        helo[i] = removeSpaces(helo[i]);
-        // std::cout << "" << i << std::endl;
-        if (helo[i] == "\n")
-            ;//std::cout << "the hole string is [\"" << helo[i] << "\"]\n"; 
-        // check if the  server  block first
+        std::cout << "------------------>" << witout[i] << std::endl;
         
-        else if (helo[i] == "server")
-        {
-            int j = i + 1;
+    }
+    // for (size_t i = 0; i < helo.size(); ++i)
+    // {
+    //     
+    //     // std::cout << "" << i << std::endl;
+    //     if (helo[i] == "\n")
+    //         ;//std::cout << "the hole string is [\"" << helo[i] << "\"]\n"; 
+    //     // check if the  server  block first
+        
+    //     else if (helo[i] == "server")
+    //     {
+    //         size_t j = i + 1;
 
-            // Check opening brace
-            if (j < helo.size() && helo[j] == "{")
-            {
-                j++;
+    //         // Check opening brace
+    //         if (j < helo.size() && helo[j] == "{")
+    //         {
+    //             j++;
 
-                // Skip empty tokens
-                while (j < helo.size() && (helo[j].empty() || helo[j] == "\n"))
-                    j++;
+    //             // Skip empty tokens
+    //             while (j < helo.size() && (helo[j].empty() || helo[j] == "\n"))
+    //                 j++;
 
-                // std::cout << "this sis the location or nooot->>>>>>> " << helo[j] <<  std::endl;
-                // helo[j] = removeSpaces(helo[j]);
+    //             // std::cout << "this sis the location or nooot->>>>>>> " << helo[j] <<  std::endl;
+    //             // helo[j] = removeSpaces(helo[j]);
                 
 
 
-                // Handle directives inside server block
-                while (j < helo.size() && helo[j] != "}")
-                {
-                    if (isDirevative(helo[j]))
-                    {
-                        std::string value = Taker(helo, j);
-                        // std::cout << "\t\t\t server --> [\"" << value << "\"]\n";
-                    }
-                    if (helo[j] == "location")
-                    {
-                        j++;
-                        j++;
-                        if (j < helo.size() && helo[j] == "{")
-                        {
-                            j++;
-                            while (j < helo.size() && (helo[j].empty() || helo[j] == "\n"))
-                                j++;
+    //             // Handle directives inside server block
+    //             while (j < helo.size() && helo[j] != "}")
+    //             {
+    //                 if (isDirevative(helo[j]))
+    //                 {
+    //                     std::string value = Taker(helo, j);
+    //                     std::cout << "\t\t\t server --> [\"" << value << "\"]\n";
+    //                 }
+    //                 if (helo[j] == "location")
+    //                 {
+    //                     j++;
+    //                     j++;
+    //                     if (j < helo.size() && helo[j] == "{")
+    //                     {
+    //                         j++;
+    //                         while (j < helo.size() && (helo[j].empty() || helo[j] == "\n"))
+    //                             j++;
 
-                            // Handle directives inside server block
-                            while (j < helo.size() && helo[j] != "}")
-                            {
-                                if (isDirevative(helo[j]))
-                                {
-                                    std::string value = Taker(helo, j);
-                                    // std::cout << "\t\t\t location --> [\"" << value << "\"]\n";
-                                }
-                                j++;
-                            }
-                        }
-                    }
-                    j++;
-                }
+    //                         // Handle directives inside server block
+    //                         while (j < helo.size() && helo[j] != "}")
+    //                         {
+    //                             if (isDirevative(helo[j]))
+    //                             {
+    //                                 std::string value = Taker(helo, j);
+    //                                 std::cout << "\t\t\t location --> [\"" << value << "\"]\n";
+    //                             }
+    //                             j++;
+    //                         }
+    //                     }
+    //                 }
+    //                 j++;
+    //             }
 
-                i = j; // skip to the end of server block
-            }
-        }
+    //             i = j; // skip to the end of server block
+    //         }
+    //     }
 
-    }
+    // }
     return 0;
 }

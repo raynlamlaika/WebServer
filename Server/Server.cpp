@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <unistd.h>
+#include <stdlib.h>
 #include <cstring>
 #include <iostream>
 
@@ -184,11 +184,11 @@ int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
 {
     std::vector<pollfd> fds;                 // All listening + client FDs here
     std::map<int, int>  fdToServerIndex;  // rememeber the port come from every server
-    for (int i = 0; i < cfg.size() ; i++)
+    for (size_t i = 0; i < cfg.size() ; i++)
     {
         // std::cout <<   "server :" << i << std::endl;
         //servers will take the port from every one
-        for (int j = 0;j < cfg[i].listen.size() ; j++)
+        for (size_t j = 0;j < cfg[i].listen.size() ; j++)
         {
             //every port in server
             // printf()
@@ -223,7 +223,7 @@ int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
         }
         for (int i = 0 ; i < (int)fds.size(); i++)
         {
-            // 1) LISTENING SOCKET (incoming client)
+            // I LISTENING SOCKET (incoming client)
             if (fdToServerIndex.count(fds[i].fd) && (fds[i].revents & POLLIN))
             {
                 int ServerId = fdToServerIndex[fds[i].fd];
@@ -249,7 +249,7 @@ int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
                 continue;
             }
             
-            // 2) CLIENT SOCKET READY TO READ
+            // II CLIENT SOCKET READY TO READ
             if (fds[i].revents & POLLIN)
             {
                 char buffer[4096];
@@ -264,11 +264,16 @@ int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
                     continue;
                 }
                 buffer[n] = '\0';
+                // the parcing should be in this buffer 'buffer'
+
                 std::cout << "[DATA FROM " << fds[i].fd << "]\n"
                         << buffer << "\n";
                 // SIMPLE RESPONSE (for now)
-                const char* reply = "HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\nHello";
+                // string = parce();
+
+                const char* reply = "HTTP/1.1 200 OK\r\nContent-Length: 10\r\n\r\nWorldHwllo";
                 send(fds[i].fd, reply, strlen(reply), 0);
+                close(fds[i].fd);
             }
         }
     }
