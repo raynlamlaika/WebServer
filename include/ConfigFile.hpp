@@ -5,7 +5,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 #include <sstream>
+#include <cstring>
 
 
 struct LocationConfig {
@@ -14,6 +16,11 @@ struct LocationConfig {
     std::string index;
     bool autoindex;
     std::vector<LocationConfig> locations;
+
+    std::vector<std::string> methods;       // Allowed HTTP methods: GET, POST, DELETE
+    std::string upload_store;               // Path to save uploaded files
+    std::map<std::string, std::string> cgi; // Map extension -> CGI interpreter path, e.g., {".php": "/usr/bin/php-cgi"}
+    std::string redirection;                // URL to redirect to, if any
 };
 
 

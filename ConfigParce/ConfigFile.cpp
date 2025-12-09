@@ -3,42 +3,15 @@
 #include <stdlib.h>
 #include <iostream>
 
-
-
 ConfigFile::ConfigFile()
 {
-    // std::vector<std::string> serverOnly = {
-    //     "listen",
-    //     "server_name",
-    //     "error_page",
-    //     "client_max_body_size",
-    //     "root",
-    //     "index",
-    //     "autoindex"
-    // };
-    // std::vector <std::string> locationOnly = {"allowed_methods", "upload_pass"};
-
-    // std::vector <std::string> common = {"root", "index", "autoindex", "error_page"};
-
-    // this->fdline = "";
-
-    // defaultServer.listen = {"8000"};
-    // defaultServer.server_name = "localhost";
-    // defaultServer.root = "/var/www/html";
-    // defaultServer.index = "index.html";
-    // defaultServer.error_page = "/error.html";
-    // defaultServer.client_max_body_size = 10000;
-    // defaultServer.autoindex = false;
     std::cout << "constracture is called \n";
-
 }
 
 ConfigFile::~ConfigFile()
 {
     std::cout << "deconstracture is called \n";
 }
-
-
 
 int ConfigFile::OpeningFile(const char *FileName)
 {
@@ -66,7 +39,6 @@ int ConfigFile::OpeningFile(const char *FileName)
     return (0);
 }
 
-
 std::vector<std::string> splitingConfg(const std::string &str)
 {
     std::vector<std::string> result;
@@ -75,10 +47,6 @@ std::vector<std::string> splitingConfg(const std::string &str)
     for (size_t i = 0; i < str.size(); ++i)
     {
         char c = str[i];
-
-        // -------------------------
-        // 1. Handle single quotes
-        // -------------------------
         if (c == '\'')
         {
             if (!current.empty()) {
@@ -104,38 +72,6 @@ std::vector<std::string> splitingConfg(const std::string &str)
             current.clear();
             continue;
         }
-
-        // -------------------------
-        // 2. Handle double quotes
-        // -------------------------
-        // if (c == '\"')
-        // {
-        //     if (!current.empty()) {
-        //         result.push_back(current);
-        //         current.clear();
-        //     }
-
-        //     i++; // move past "
-        //     while (i < str.size() && str[i] != '\"')
-        //     {
-        //         current += str[i];
-        //         i++;
-        //     }
-
-        //     if (i >= str.size())
-        //     {
-        //         std::cerr << "ERROR: Unterminated double quote\n";
-        //         exit(1);
-        //     }
-
-        //     result.push_back(current);
-        //     current.clear();
-        //     continue;
-        // }
-
-        // -------------------------
-        // 3. Block start "{"
-        // -------------------------
         if (c == '{')
         {
             if (!current.empty())
@@ -147,9 +83,6 @@ std::vector<std::string> splitingConfg(const std::string &str)
             continue;
         }
 
-        // -------------------------
-        // 4. Block end "}"
-        // -------------------------
         if (c == '}')
         {
             if (!current.empty())
@@ -170,9 +103,7 @@ std::vector<std::string> splitingConfg(const std::string &str)
             result.push_back("\n");
             continue;
         }
-        // -------------------------
-        // 5. Whitespace means end of token
-        // -------------------------
+
         if (std::isspace(c))
         {
             if (!current.empty())
@@ -183,9 +114,6 @@ std::vector<std::string> splitingConfg(const std::string &str)
             continue;
         }
 
-        // -------------------------
-        // 6. Normal character
-        // -------------------------
         current += c;
     }
 
@@ -198,50 +126,26 @@ std::vector<std::string> splitingConfg(const std::string &str)
 
 
 
-
-
-bool ServerDirective(const std::string& token) {
-    static const char* dirs[] = {
-        "listen", "server_name", "root", "index",
-        "error_page", "client_max_body_size", "return"
-    };
-    for (int i = 0; i < 7; i++)
-        if (token == dirs[i])
-            return true;
-    return false;
-}
-
-bool LocationDirective(const std::string& token) {
-    static const char* dirs[] = {
-        "allow_methods", "autoindex", "upload_path",
-        "cgi_extension", "cgi_path", "redirection", "alias"
-    };
-    for (int i = 0; i < 7; i++)
-        if (token == dirs[i])
-            return true;
-    return false;
-}
-
-
-
-
-std::string Taker(const std::vector<std::string>& helo, int i)
+std::string Taker(const std::vector<std::string>& helo, size_t & i)
 {
     std::string result;
 
     // Safety check
-    if (i < 0 || i >= (int)helo.size())
+    std::cout << "Taker the arges   |" << helo[i]  << std::endl;
+    if (i < 0 || i >= helo.size())
         return result;
 
-    for (int k = i; k < (int)helo.size(); k++)
+    for (size_t k = i; k < helo.size(); k++)
     {
         result += helo[k];
+        
 
         // Stop as soon as we find a token ending with ';'
         if (!helo[k].empty() && helo[k].find(";") != std::string::npos)
             return result;
 
         result += " "; // space between tokens if needed
+        i++;
     }
 
     return result; // if no ';' found, return full concatenation
@@ -256,15 +160,6 @@ std::string removeSpaces(const std::string& input) {
     }
     return result;
 }
-
-
-// int skipns(std::vector<std::string> strs, int index)
-// {
-//     for (int i =index ; strs[i] ; i++)
-// }
-#include <vector>
-#include <string>
-#include <cctype>
 
 std::vector<std::string> removeEmptyLines(const std::vector<std::string> &strs)
 {
@@ -298,6 +193,25 @@ bool isBlock(std::string str)
         return true;
     return false;
 }
+
+
+typedef struct t_block
+{
+    std::string BlockName;
+    std::string rrrr;
+}   block;
+
+int checkBlock(std::string token)
+{
+    // std::cout << token.c_str() <<"<------this sisthe innd \n";
+    if (strcmp(token.c_str(), "server") == 0) // need to fix later
+        return (2);
+    else if (strcmp(token.c_str(), "http") == 0)
+        return (1);
+    return false;
+}
+
+
 int isDirevative(std::string str)
 {
      static const char* dirs[] =
@@ -322,17 +236,6 @@ int isDirevative(std::string str)
     }
     return 0;
 }    
-bool StartBllock(std::string str)
-{
-    return str =="{" ? true : false;
-}
-bool EndBlock(std::string str)
-{
-    return str =="}" ? true : false;
-}
-
-
-
 
 int ConfigFile::TakeData()
 {
@@ -402,23 +305,215 @@ int ConfigFile::TakeData()
 
 
     // check the ; at the end of string
+    std::vector<std::string> tokens = removeEmptyLines(helo);
+    size_t i = 0;
 
-    std::vector<std::string> witout = removeEmptyLines(helo);
-    for (size_t i = 0; i < witout.size(); ++i)
+
+    while (i < tokens.size())
     {
-        std::cout << "------------------>" << witout[i] << std::endl;
-        
-        if (isBlock(witout[i]))
+        int y = checkBlock(tokens[i]);
+        if (y == 0)
         {
-            
+            std::cerr << "Unexpected token: " << tokens[i] << "\n";
+            exit(1);
         }
-        else if (isDirevative(witout[i]))
-            ;
-        else if (StartBllock(witout[i]))
-            ;
-        else if (EndBlock(witout[i]))
-            ;
+        if (y == 1)// handel the http bloock
+        {
+            if (tokens[i+1] != "{")
+                return std::cerr << "Error: expected '{' after http\n", exit(1), 1;
+
+            i += 2; // skip "http {"
+            int depth = 1;
+
+            while (i < tokens.size() && depth > 0)
+            {
+                if (tokens[i] == "{")
+                {
+                    depth++;
+                    i++;
+                }
+                else if (tokens[i] == "}")
+                {
+                    depth--;
+                    i++;
+                }
+                else
+                {
+                    int inner = checkBlock(tokens[i]);
+                    // std::cout << inner <<"<------this sisthe innd \n";
+                    if (inner == 2) // server inside http
+                    {
+                        // parse server block
+                        ServerConfig servinfo;
+
+                        if (tokens[i+1] != "{")
+                            return std::cerr << "Error: expected '{' after server\n", exit(1), 1;
+
+                        i += 2; // skip "server {"
+                        int srvDepth = 1;
+
+                        while (i < tokens.size() && srvDepth > 0)
+                        {
+                            if (tokens[i] == "{")
+                                srvDepth++;
+                            else if (tokens[i] == "}")
+                                srvDepth--;
+                            else
+                            {
+                                while (isDirevative(tokens[i]))
+                                {
+                                    std::string name = tokens[i];
+
+                                    // std::string FullLine = // full line in here;
+                                    if (name == "listen")
+                                    {
+                                        
+                                        std::string listen = Taker(tokens, i);
+                                        std::cout << listen << "\n";
+                                        // servinfo.listen = Taker(tokens, i);
+                                    }
+                                    else if (name == "server_name")
+                                    {
+                                        std::string  server_name = Taker(tokens, i);
+                                        std::cout << server_name << "\n";
+                                        // servinfo.server_name = Taker();
+                                    }
+                                    else if (name == "root")
+                                    {
+                                        std::string root = Taker(tokens, i);
+                                        std::cout << root << "\n";
+                                        
+                                        // servinfo.root = Taker(tokens, i);
+                                    }
+                                    else if (name == "error_page")
+                                    {
+                                        std::string  error_page = Taker(tokens, i);
+                                        std::cout << error_page << "\n";
+
+                                        // servinfo.error_page = Taker(tokens, i);
+                                    }
+                                    else if (name == "client_max_body_size")
+                                    {
+                                        std::string  client_max_body_size = Taker(tokens, i);
+                                        std::cout << client_max_body_size << "\n";
+                                        
+                                        // servinfo.client_max_body_size = Taker(tokens, i);
+                                    }
+                                    else if (name == "index")
+                                    {
+                                        std::string  index = Taker(tokens, i);
+                                        std::cout << index << "\n";
+                                        
+                                        // servinfo.client_max_body_size = Taker(tokens, i);
+                                    }
+                                    i++;
+
+                                }
+                                if (tokens[i] == "location")
+                                {
+                                    // check aregs first
+                                    i++;
+                                    std::string name = tokens[i];
+                                    if (name != "{")
+                                    {
+                                        std::cout << "the path is :" << name << std::endl;
+                                        i++;
+                                        if (tokens[i] == "{")
+                                            i++;
+                                        else
+                                            return(std::cout << "Unexpected tokeeen " << tokens[i]  << std::endl, exit(1), 1);
+                                        std::cout << "|" << tokens[i] <<"|" << "\n";
+                                        
+                                    }
+                                    while (isDirevative(tokens[i]))
+                                    {
+                                        name = tokens[i];
+                                        if (name == "methods")
+                                        {
+                                            std::string  tokenn = Taker(tokens, i);
+                                            std::cout << tokenn << "\n";
+                                        }
+                                        else if (name == "root")
+                                        {
+                                            std::cout << "sddddd\n";
+                                            std::string  tokenn = Taker(tokens, i);
+                                            std::cout << tokenn << "\n";
+                                        }
+                                        else if (name == "index")
+                                        {
+                                            std::string  tokenn = Taker(tokens, i);
+                                            std::cout << tokenn << "\n";
+                                        }
+                                        else if (name == "autoindex")
+                                        {
+                                            std::string  tokenn = Taker(tokens, i);
+                                            std::cout << tokenn << "\n";
+                                        }
+                                        else if (name == "upload_store")
+                                        {
+                                            std::string  tokenn = Taker(tokens, i);
+                                            std::cout << tokenn << "\n";
+                                        }
+                                        else if (name == "cgi")
+                                        {
+                                            std::string  tokenn = Taker(tokens, i);
+                                            std::cout << tokenn << "\n";
+                                        }
+                                        else if (name == "return")
+                                        {
+                                            std::string  tokenn = Taker(tokens, i);
+                                            std::cout << tokenn << "\n";
+                                        }
+                                        i++;
+                                    }
+                                }
+                                else
+                                {
+                                    std::cerr << "Error: only server blocks are allowed inside http. Found: " << tokens[i] << "\n";
+                                    exit(1);
+                                }   
+                            }
+                            i++;
+                        }
+
+                        // push the fully filled server to your ConfigFile servers vector
+                        std::cout << "server is finished" << std::endl;
+                        servers.push_back(servinfo);
+                    }
+                    else
+                    {
+                        std::cerr << "Error: only server blocks are allowed inside http. Found: " << tokens[i] << "\n";
+                        exit(1);
+                    }
+                }
+            }
+        }
+        else if (y == 2) // handel the server block
+        {
+            ServerConfig servinfo;
+
+            if (tokens[i+1] != "{")
+                return std::cerr << "Error: expected '{' after server\n", exit(1), 1;
+            i += 2; // skip "server {"
+            int depth = 1;
+
+            while (i < tokens.size() && depth > 0)
+            {
+                if (tokens[i] == "{") depth++;
+                else if (tokens[i] == "}") depth--;
+                else
+                {
+                    // parse server-level directive or location
+                    // fill servinfo
+                    
+                }
+                i++;
+            }
+
+            servers.push_back(servinfo);
+        }
     }
+   
 
 
 
@@ -430,89 +525,5 @@ int ConfigFile::TakeData()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // for (size_t i = 0; i < helo.size(); ++i)
-    // {
-    //     
-    //     // std::cout << "" << i << std::endl;
-    //     if (helo[i] == "\n")
-    //         ;//std::cout << "the hole string is [\"" << helo[i] << "\"]\n"; 
-    //     // check if the  server  block first
-        
-    //     else if (helo[i] == "server")
-    //     {
-    //         size_t j = i + 1;
-
-    //         // Check opening brace
-    //         if (j < helo.size() && helo[j] == "{")
-    //         {
-    //             j++;
-
-    //             // Skip empty tokens
-    //             while (j < helo.size() && (helo[j].empty() || helo[j] == "\n"))
-    //                 j++;
-
-    //             // std::cout << "this sis the location or nooot->>>>>>> " << helo[j] <<  std::endl;
-    //             // helo[j] = removeSpaces(helo[j]);
-                
-
-
-    //             // Handle directives inside server block
-    //             while (j < helo.size() && helo[j] != "}")
-    //             {
-    //                 if (isDirevative(helo[j]))
-    //                 {
-    //                     std::string value = Taker(helo, j);
-    //                     std::cout << "\t\t\t server --> [\"" << value << "\"]\n";
-    //                 }
-    //                 if (helo[j] == "location")
-    //                 {
-    //                     j++;
-    //                     j++;
-    //                     if (j < helo.size() && helo[j] == "{")
-    //                     {
-    //                         j++;
-    //                         while (j < helo.size() && (helo[j].empty() || helo[j] == "\n"))
-    //                             j++;
-
-    //                         // Handle directives inside server block
-    //                         while (j < helo.size() && helo[j] != "}")
-    //                         {
-    //                             if (isDirevative(helo[j]))
-    //                             {
-    //                                 std::string value = Taker(helo, j);
-    //                                 std::cout << "\t\t\t location --> [\"" << value << "\"]\n";
-    //                             }
-    //                             j++;
-    //                         }
-    //                     }
-    //                 }
-    //                 j++;
-    //             }
-
-    //             i = j; // skip to the end of server block
-    //         }
-    //     }
-
-    // }
     return 0;
 }
