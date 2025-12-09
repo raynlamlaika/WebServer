@@ -18,8 +18,10 @@ class Request {
         
 
         void    GetParam(std::string line);
-        void    GetRequest();
-        void     validate(std::string PATH);
+        void    GetRequest(int fd);
+        void    PostRequest(int fd, std::string line);
+        void     validate();
+        void     Readfile();
     public:
         Request();
         void    mainRequest(std::string line);
