@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hamza — 1337 Modern UI</title>
+
+  <!-- Tailwind CDN (instant, great for prototypes) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tailwind config: extend fonts and colors for a modern 2025 look
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+            display: ['Lexend', 'system-ui']
+          },
+          colors: {
+            'neon-1': '#7c3aed',
+            'neon-2': '#06b6d4',
+            'glass-1': 'rgba(255,255,255,0.06)'
+          },
+          keyframes: {
+            "gradient-x": {
+              '0%': { 'background-position': '0% 50%' },
+              '50%': { 'background-position': '100% 50%' },
+              '100%': { 'background-position': '0% 50%' }
+            }
+          },
+          animation: {
+            'gradient-x': 'gradient-x 8s ease infinite'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* extra small helpers that Tailwind doesn't provide concisely */
+    .neon-text {
+      text-shadow: 0 2px 12px rgba(124,58,237,0.25), 0 6px 40px rgba(6,182,212,0.12);
+    }
+
+    .frost {
+      backdrop-filter: blur(8px) saturate(120%);
+      -webkit-backdrop-filter: blur(8px) saturate(120%);
+    }
+
+    /* animated gradient bg */
+    .animated-gradient {
+      background: linear-gradient(90deg, #7c3aed 0%, #06b6d4 35%, #0ea5a4 55%, #60a5fa 100%);
+      background-size: 300% 300%;
+    }
+
+    /* subtle 1337 style glyph */
+    .leet {
+      font-variation-settings: 'wght' 800;
+      letter-spacing: -0.02em;
+    }
+
+    /* responsive hero height */
+    .hero-height { height: min(72vh, 720px); }
+  </style>
+</head>
+<body class="bg-[#05060a] text-slate-200 antialiased font-sans">
+
+  <!-- Nav -->
+  <header class="fixed w-full z-30 top-4 px-6 lg:px-12">
+    <nav class="max-w-6xl mx-auto flex items-center justify-between">
+      <a class="flex items-center gap-3" href="#">
+        <div class="w-10 h-10 rounded-xl animated-gradient p-[2px] shadow-lg">
+          <div class="w-full h-full bg-[#05060a] rounded-md flex items-center justify-center text-xs font-bold">HK</div>
+        </div>
+        <span class="font-display text-lg tracking-tight">Hamza<span class="ml-2 text-sm text-slate-400">• 1337 UI</span></span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-4">
+        <a class="text-slate-300 text-sm hover:text-white transition" href="#features">Features</a>
+        <a class="text-slate-300 text-sm hover:text-white transition" href="#projects">Projects</a>
+        <a class="text-slate-300 text-sm hover:text-white transition" href="#contact">Contact</a>
+        <button class="ml-4 px-4 py-2 rounded-lg bg-gradient-to-r from-neon-1 to-neon-2 shadow-md text-sm">Get in touch</button>
+      </div>
+
+      <button class="md:hidden p-2 rounded-md bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.04)] frost">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <main class="pt-28">
+    <section class="max-w-6xl mx-auto px-6 lg:px-12 hero-height flex items-center">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div>
+          <p class="text-sm text-slate-400 mb-4">Modern UI concept — 2025 · Creative toolbox</p>
+          <h1 class="text-5xl md:text-6xl leading-tight font-display neon-text neon-text neon-text">
+            <span class="block animated-gradient bg-clip-text text-transparent neon-text neon-text neon-text animate-gradient-x">1337</span>
+            <span class="block mt-2 text-3xl md:text-4xl text-slate-100 leet">Elegant web patterns · glassmorphism · micro-interactions</span>
+          </h1>
+
+          <p class="mt-6 text-slate-300 max-w-xl">A minimal, futuristic design system inspired by neon gradients, smooth glass layers, and modern typographic scale. Perfect for portfolios, product landing pages, and experimentations.</p>
+
+          <div class="mt-8 flex gap-3">
+            <a href="#projects" class="px-5 py-3 rounded-lg bg-gradient-to-r from-neon-1 to-neon-2 shadow-lg text-sm font-semibold">See projects</a>
+            <a href="#features" class="px-5 py-3 rounded-lg border border-[rgba(255,255,255,0.06)] text-sm text-slate-200">Explore features</a>
+          </div>
+
+          <div class="mt-8 flex items-center gap-6">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl frost bg-[rgba(124,58,237,0.12)] flex items-center justify-center">🎨</div>
+              <div>
+                <div class="text-sm text-slate-300">Design system</div>
+                <div class="text-xs text-slate-500">Tokens, spacing, components</div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl frost bg-[rgba(6,182,212,0.06)] flex items-center justify-center">⚡</div>
+              <div>
+                <div class="text-sm text-slate-300">Performance</div>
+                <div class="text-xs text-slate-500">Tiny bundle & fast paint</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: mockup card -->
+        <div class="relative">
+          <div class="rounded-2xl shadow-2xl overflow-hidden border border-[rgba(255,255,255,0.04)]">
+            <div class="p-6 bg-gradient-to-b from-[rgba(255,255,255,0.02)] to-[rgba(255,255,255,0.01)]">
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-md animated-gradient p-[2px]"></div>
+                  <div>
+                    <div class="text-sm font-medium">Project — Nebula UI</div>
+                    <div class="text-xs text-slate-500">React · Tailwind · Animations</div>
+                  </div>
+                </div>
+                <div class="text-xs text-slate-400">v1.2</div>
+              </div>
+
+              <div class="rounded-lg bg-[rgba(10,11,15,0.6)] p-4 grid gap-3">
+                <div class="flex items-center justify-between">
+                  <div class="text-xs text-slate-400">Line charts</div>
+                  <div class="text-sm font-semibold">+24%</div>
+                </div>
+                <div class="h-36 rounded-md bg-gradient-to-br from-[rgba(124,58,237,0.08)] to-[rgba(6,182,212,0.04)] flex items-center justify-center text-slate-400">Interactive mockup</div>
+              </div>
+
+              <div class="mt-4 flex gap-3">
+                <button class="flex-1 py-2 rounded-md border border-[rgba(255,255,255,0.04)] text-sm">Preview</button>
+                <button class="px-4 py-2 rounded-md bg-gradient-to-r from-neon-1 to-neon-2 text-sm">Use</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- floating badges -->
+          <div class="absolute -bottom-6 left-6 flex gap-3">
+            <div class="p-3 rounded-xl frost border border-[rgba(255,255,255,0.04)]">🌐 Live demo</div>
+            <div class="p-3 rounded-xl frost border border-[rgba(255,255,255,0.04)]">⚙️ Open source</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="max-w-6xl mx-auto px-6 lg:px-12 py-16">
+      <h2 class="text-2xl font-semibold mb-6">Features</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <article class="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.03)] frost">
+          <h3 class="font-medium mb-2">Design tokens</h3>
+          <p class="text-sm text-slate-400">Scalable tokens for color, spacing, and motion.</p>
+        </article>
+        <article class="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.03)] frost">
+          <h3 class="font-medium mb-2">Accessibility</h3>
+          <p class="text-sm text-slate-400">Contrast-first palette and keyboard routes.</p>
+        </article>
+        <article class="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.03)] frost">
+          <h3 class="font-medium mb-2">Micro‑interactions</h3>
+          <p class="text-sm text-slate-400">Small animations to delight without distraction.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="max-w-6xl mx-auto px-6 lg:px-12 py-8">
+      <h2 class="text-2xl font-semibold mb-6">Projects</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="p-4 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.03)]">
+          <h4 class="font-medium mb-2">Nebula Dashboard</h4>
+          <p class="text-sm text-slate-400">A minimal analytics dashboard with live themes.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.03)]">
+          <h4 class="font-medium mb-2">Aurora Site</h4>
+          <p class="text-sm text-slate-400">Landing page kit with modular sections.</p>
+        </div>
+        <div class="p-4 rounded-2xl bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.03)]">
+          <h4 class="font-medium mb-2">Pulse Motion</h4>
+          <p class="text-sm text-slate-400">Interaction micro-library for buttons & inputs.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact / Footer -->
+    <footer id="contact" class="max-w-6xl mx-auto px-6 lg:px-12 py-12">
+      <div class="rounded-2xl p-6 bg-[rgba(255,255,255,0.02)] border border-[rgba(255,255,255,0.03)] frost flex flex-col md:flex-row items-center justify-between gap-6">
+        <div>
+          <div class="text-lg font-medium">Let's build something</div>
+          <div class="text-sm text-slate-400">Interested in collaborating? Drop a message.</div>
+        </div>
+        <div class="flex gap-3">
+          <a href="mailto:hello@hamza.dev" class="px-4 py-2 rounded-lg bg-gradient-to-r from-neon-1 to-neon-2">Email</a>
+          <a href="#" class="px-4 py-2 rounded-lg border">GitHub</a>
+        </div>
+      </div>
+
+      <p class="text-center text-xs text-slate-500 mt-6">© Hamza — Inspired by modern UI trends · 2025</p>
+    </footer>
+  </main>
+
+  <!-- small script to add a subtle scroll reveal -->
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.querySelectorAll('section').forEach((s, i) => {
+        s.style.opacity = 0;
+        s.style.transform = 'translateY(10px)';
+        setTimeout(()=>{
+          s.style.transition = 'opacity .6s ease, transform .6s ease';
+          s.style.opacity = 1;
+          s.style.transform = 'translateY(0)';
+        }, 120*i);
+      });
+    });
+  </script>
+</body>
+</html>

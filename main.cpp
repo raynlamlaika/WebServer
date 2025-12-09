@@ -137,7 +137,7 @@ int main(int ac, char **av)
         return 0;
     }   
     if(Config->TakeData())
-        ;
+        {}
 
     // work with the defaut values
     // ConfigFile Conf;
@@ -157,6 +157,19 @@ int main(int ac, char **av)
     // close(server_fd);
 
     // delete Config;
+
+    std::vector<ServerConfig> k;
+    std::vector<ServerConfig> p =hard_code(k);
+    printServers(p);
+
+    Server *hh  = new Server();
+    hh->ServersPortsLoop(p);    
+    // ServersPortsLoop(k);
+
+    // int server_fd = k.createServerSocket(bb);
+
+    // std::cout << "Server running...\n";
+    std::cout << "Server running...\n";
     return 0;
 }
 

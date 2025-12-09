@@ -7,22 +7,26 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <string>
 
-
-class Request {
+class Request
+{
     private:
         std::string     _METHOD;
         std::string     _PATH;
         std::string     _CONTENT;
-        long            _SIZE;
-        
+        size_t            _SIZE;
 
         void    GetParam(std::string line);
-        void    GetRequest();
-        void     validate(std::string PATH);
+        void    GetRequest(int fd);
+        void     validate();
+        void     Readfile();
     public:
         Request();
-        void    mainRequest(std::string line);
+        void    mainRequest(std::string line, int fd);
 };
 
 

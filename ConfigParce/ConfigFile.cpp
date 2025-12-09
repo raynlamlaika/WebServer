@@ -413,11 +413,17 @@ int ConfigFile::TakeData()
             
         }
         else if (isDirevative(witout[i]))
-            ;
+        {
+
+        }
         else if (StartBllock(witout[i]))
-            ;
+        {
+
+        }
         else if (EndBlock(witout[i]))
-            ;
+        {
+            
+        }
     }
 
 
