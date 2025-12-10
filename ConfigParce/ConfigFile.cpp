@@ -237,6 +237,147 @@ int isDirevative(std::string str)
     return 0;
 }    
 
+std::vector<std::string> splitString(const std::string& s, char delimiter) {
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s); // Create an input string stream from the string
+
+    while (std::getline(tokenStream, token, delimiter)) { // Extract tokens using getline
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+
+int ConfigFile::helper(std::vector<std::string>& tokens, size_t &i, LocationConfig &Holder)
+{
+    i++;
+    std::string name = tokens[i];
+    if (name != "{")
+    {
+        std::cout << "the path is :" << name << std::endl;
+        i++;
+        if (tokens[i] == "{")
+            i++;
+        else
+            return(std::cout << "Unexpected tokeeen " << tokens[i]  << std::endl, exit(1), 1);
+        std::cout << "|" << tokens[i] <<"|" << "\n";
+        
+    }
+    while (isDirevative(tokens[i]))
+    {
+        name = tokens[i];
+        if (name == "methods")
+        {
+            Holder.methods = Taker(tokens, i);
+        }
+        else if (name == "root")
+        {
+            Holder.root = Taker(tokens, i);
+        }
+        else if (name == "index")
+        {
+            Holder.index = Taker(tokens, i);
+        }
+        else if (name == "autoindex")
+        {
+            Holder.autoindex = atoi(Taker(tokens, i).c_str());
+        }
+        else if (name == "upload_store")
+        {
+            Holder.upload_store = Taker(tokens, i);
+        }
+        // else if (name == "cgi")
+        // {
+        //     std::string  tokenn = Taker(tokens, i);
+        // }
+        else if (name == "return")
+        {
+            Holder._return = splitString(Taker(tokens, i), ' ');
+        }
+        i++;
+    }
+    return 1;
+}
+
+
+
+
+
+    
+int ConfigFile::serverHelper(std::vector<std::string>& tokens, size_t &i)
+{
+    // parse server block
+    ServerConfig servinfo;
+    if (tokens[i+1] != "{")
+        return std::cerr << "Error: expected '{' after server\n", exit(1), 1;
+    i += 2; // skip "server {"
+    int srvDepth = 1;
+    while (i < tokens.size() && srvDepth > 0)
+    {
+        if (tokens[i] == "{")
+            srvDepth++;
+        else if (tokens[i] == "}")
+            srvDepth--;
+        else
+        {
+            while (isDirevative(tokens[i]))
+            {
+                std::string name = tokens[i];
+                if (name == "listen")
+                {
+                    // servinfo.listen = splitString( ' ');
+                    Taker(tokens, i);
+                }
+                else if (name == "server_name")
+                {
+                    servinfo.server_name = Taker(tokens, i);
+                    std::cout << servinfo.server_name << "\n";
+                }
+                else if (name == "root")
+                {
+                    servinfo.root = Taker(tokens, i);
+                    std::cout << servinfo.root << "\n";
+                }
+                else if (name == "error_page")
+                {
+                    servinfo.error_page = Taker(tokens, i);
+                    std::cout << servinfo.error_page << "\n";
+                }
+                // else if (name == "client_max_body_size")
+                // {
+                //     servinfo.client_max_body_size = atoi(Taker(tokens, i).c_str());
+                //     // std::cout << servinfo.client_max_body_size << "\n";
+                // }
+                else if (name == "index")
+                {
+                    servinfo.index = Taker(tokens, i);
+                    std::cout << servinfo.index << "\n";
+                }
+                i++;
+                if (tokens[i])
+                    break;
+            }
+            if (tokens[i] == "location")
+            {
+                LocationConfig Holder;
+                helper(tokens,i, Holder);
+                servinfo.locations.push_back(Holder);
+            }
+            else
+            {
+                std::cerr << "Error: only server blocks are allowed inside http. Found: " << tokens[i] << "\n";
+                exit(1);
+            }   
+        }
+        i++;
+    }
+    // push the fully filled server to your ConfigFile servers vector
+    std::cout << "server is finished" << std::endl;
+    servers.push_back(servinfo);
+    return 1;
+}
+
 int ConfigFile::TakeData()
 {
     // remove the commantes
@@ -342,138 +483,10 @@ int ConfigFile::TakeData()
                     int inner = checkBlock(tokens[i]);
                     // std::cout << inner <<"<------this sisthe innd \n";
                     if (inner == 2) // server inside http
-                    {
-                        // parse server block
-                        ServerConfig servinfo;
-
-                        if (tokens[i+1] != "{")
-                            return std::cerr << "Error: expected '{' after server\n", exit(1), 1;
-
-                        i += 2; // skip "server {"
-                        int srvDepth = 1;
-
-                        while (i < tokens.size() && srvDepth > 0)
-                        {
-                            if (tokens[i] == "{")
-                                srvDepth++;
-                            else if (tokens[i] == "}")
-                                srvDepth--;
-                            else
-                            {
-                                while (isDirevative(tokens[i]))
-                                {
-                                    std::string name = tokens[i];
-
-                                    if (name == "listen")
-                                    {
-                                        // servinfo.listen = Taker(tokens, i);
-                                        std::string listen = Taker(tokens, i);
-                                        std::cout << listen << "\n";
-                                    }
-                                    else if (name == "server_name")
-                                    {
-                                        servinfo.server_name = Taker(tokens, i);
-                                        std::cout << servinfo.server_name << "\n";
-                                    }
-                                    else if (name == "root")
-                                    {
-                                        servinfo.root = Taker(tokens, i);
-                                        std::cout << servinfo.root << "\n";
-                                    }
-                                    else if (name == "error_page")
-                                    {
-                                        servinfo.error_page = Taker(tokens, i);
-                                        std::cout << servinfo.error_page << "\n";
-                                    }
-                                    else if (name == "client_max_body_size")
-                                    {
-                                        // servinfo.client_max_body_size = Taker(tokens, i);
-                                        std::cout << servinfo.client_max_body_size << "\n";
-                                    }
-                                    else if (name == "index")
-                                    {
-                                        servinfo.index = Taker(tokens, i);
-                                        std::cout << servinfo.index << "\n";
-                                    }
-                                    i++;
-
-                                }
-                                if (tokens[i] == "location")
-                                {
-                                    // check aregs first
-                                    LocationConfig Holder;
-                                    i++;
-                                    std::string name = tokens[i];
-                                    if (name != "{")
-                                    {
-                                        std::cout << "the path is :" << name << std::endl;
-                                        i++;
-                                        if (tokens[i] == "{")
-                                            i++;
-                                        else
-                                            return(std::cout << "Unexpected tokeeen " << tokens[i]  << std::endl, exit(1), 1);
-                                        std::cout << "|" << tokens[i] <<"|" << "\n";
-                                        
-                                    }
-                                    while (isDirevative(tokens[i]))
-                                    {
-                                        name = tokens[i];
-                                        if (name == "methods")
-                                        {
-                                            
-                                            std::string  tokenn = Taker(tokens, i);
-                                            std::cout << tokenn << "\n";
-                                        }
-                                        else if (name == "root")
-                                        {
-                                            std::cout << "sddddd\n";
-                                            std::string  tokenn = Taker(tokens, i);
-                                            std::cout << tokenn << "\n";
-                                        }
-                                        else if (name == "index")
-                                        {
-                                            std::string  tokenn = Taker(tokens, i);
-                                            std::cout << tokenn << "\n";
-                                        }
-                                        else if (name == "autoindex")
-                                        {
-                                            std::string  tokenn = Taker(tokens, i);
-                                            std::cout << tokenn << "\n";
-                                        }
-                                        else if (name == "upload_store")
-                                        {
-                                            std::string  tokenn = Taker(tokens, i);
-                                            std::cout << tokenn << "\n";
-                                        }
-                                        else if (name == "cgi")
-                                        {
-                                            std::string  tokenn = Taker(tokens, i);
-                                            std::cout << tokenn << "\n";
-                                        }
-                                        else if (name == "return")
-                                        {
-                                            std::string  tokenn = Taker(tokens, i);
-                                            std::cout << tokenn << "\n";
-                                        }
-                                        i++;
-                                    }
-                                }
-                                else
-                                {
-                                    std::cerr << "Error: only server blocks are allowed inside http. Found: " << tokens[i] << "\n";
-                                    exit(1);
-                                }   
-                            }
-                            i++;
-                        }
-
-                        // push the fully filled server to your ConfigFile servers vector
-                        std::cout << "server is finished" << std::endl;
-                        servers.push_back(servinfo);
-                    }
+                        serverHelper(tokens, i);
                     else
                     {
-                        std::cerr << "Error: only server blocks are allowed inside http. Found: " << tokens[i] << "\n";
+                        std::cerr << "Error: ->only server blocks are allowed inside http. Found: " << tokens[i] << "\n";
                         exit(1);
                     }
                 }
@@ -482,37 +495,14 @@ int ConfigFile::TakeData()
         else if (y == 2) // handel the server block
         {
             ServerConfig servinfo;
-
-            if (tokens[i+1] != "{")
+            std::cout << "|"<< tokens[i+1] << "|\n";
+            if (strcmp(tokens[i+1].c_str() ,"{") !=0)
                 return std::cerr << "Error: expected '{' after server\n", exit(1), 1;
-            i += 2; // skip "server {"
-            int depth = 1;
-
-            while (i < tokens.size() && depth > 0)
-            {
-                if (tokens[i] == "{") depth++;
-                else if (tokens[i] == "}") depth--;
-                else
-                {
-                    // parse server-level directive or location
-                    // fill servinfo
-                    
-                }
-                i++;
-            }
-
-            servers.push_back(servinfo);
+            serverHelper( tokens, i);
         }
     }
+    printServers(servers);
    
-
-
-
-
-
-
-
-
 
 
 

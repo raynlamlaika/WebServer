@@ -9,11 +9,6 @@
 #include <sstream>
 #include <cstring>
 
-struct ReturnDirective {
-    int status_code;
-    std::string redirect_to;
-};
-
 struct LocationConfig {
     std::string path;              // e.g. "/images"
     std::string root;
@@ -70,8 +65,13 @@ public:
     int OpeningFile(const char *FileName);
     int TakeData();
     void TakerD(std::vector<std::string>helo, int IndexStart ,int IndexEnd );
+    int helper(std::vector<std::string>& tokens, size_t &i, LocationConfig & Holder);
+    int serverHelper(std::vector<std::string>& tokens, size_t &i);
+
 };
 
 
+
+void printServers(const std::vector<ServerConfig>& servers);
 #endif
 
