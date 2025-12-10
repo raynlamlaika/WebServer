@@ -1,4 +1,5 @@
-http {
+http 
+{
 
     server {
         listen 80;
@@ -7,13 +8,14 @@ http {
         index index.html index.htm;
 
         location / {
-            try_files $uri $uri/ = 404;
+            root $uri $uri/ = 404;
         }
 
         location /api/ {
-            proxy_pass http://backend_server:8080;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
+            root http://backend_server:8080;
+            root Host $host;
+            root X-Real-IP $remote_addr;
+            return X-Real-IP $remote_addr;
         }
     }
     server {
@@ -23,13 +25,7 @@ http {
         index index.html index.htm;
 
         location / {
-            try_files $uri $uri/ =404;;;;;
-        }
-
-        location /api/ {
-            proxy_pass http://backend_server:8080;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
+            root $uri $uri/ =404;;;;;
         }
     }
     http
@@ -40,16 +36,5 @@ http {
         listen 80;
         server_name example.com www.example.com;
         root /var/www/html;
-        index index.html index.htm;
-
-        location / {
-            try_files $uri $uri/ =404;;;;;
-        }
-
-        location /api/ {
-            proxy_pass http://backend_server:8080;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-        }
     }
 }

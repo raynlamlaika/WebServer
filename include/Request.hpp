@@ -14,7 +14,7 @@ class Request {
         std::string     _METHOD;
         std::string     _PATH;
         std::string     _CONTENT;
-        long            _SIZE;
+        // long            _SIZE;
         
 
         void    GetParam(std::string line);

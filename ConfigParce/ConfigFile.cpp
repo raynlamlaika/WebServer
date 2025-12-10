@@ -364,47 +364,36 @@ int ConfigFile::TakeData()
                                 {
                                     std::string name = tokens[i];
 
-                                    // std::string FullLine = // full line in here;
                                     if (name == "listen")
                                     {
-                                        
+                                        // servinfo.listen = Taker(tokens, i);
                                         std::string listen = Taker(tokens, i);
                                         std::cout << listen << "\n";
-                                        // servinfo.listen = Taker(tokens, i);
                                     }
                                     else if (name == "server_name")
                                     {
-                                        std::string  server_name = Taker(tokens, i);
-                                        std::cout << server_name << "\n";
-                                        // servinfo.server_name = Taker();
+                                        servinfo.server_name = Taker(tokens, i);
+                                        std::cout << servinfo.server_name << "\n";
                                     }
                                     else if (name == "root")
                                     {
-                                        std::string root = Taker(tokens, i);
-                                        std::cout << root << "\n";
-                                        
-                                        // servinfo.root = Taker(tokens, i);
+                                        servinfo.root = Taker(tokens, i);
+                                        std::cout << servinfo.root << "\n";
                                     }
                                     else if (name == "error_page")
                                     {
-                                        std::string  error_page = Taker(tokens, i);
-                                        std::cout << error_page << "\n";
-
-                                        // servinfo.error_page = Taker(tokens, i);
+                                        servinfo.error_page = Taker(tokens, i);
+                                        std::cout << servinfo.error_page << "\n";
                                     }
                                     else if (name == "client_max_body_size")
                                     {
-                                        std::string  client_max_body_size = Taker(tokens, i);
-                                        std::cout << client_max_body_size << "\n";
-                                        
                                         // servinfo.client_max_body_size = Taker(tokens, i);
+                                        std::cout << servinfo.client_max_body_size << "\n";
                                     }
                                     else if (name == "index")
                                     {
-                                        std::string  index = Taker(tokens, i);
-                                        std::cout << index << "\n";
-                                        
-                                        // servinfo.client_max_body_size = Taker(tokens, i);
+                                        servinfo.index = Taker(tokens, i);
+                                        std::cout << servinfo.index << "\n";
                                     }
                                     i++;
 
@@ -412,6 +401,7 @@ int ConfigFile::TakeData()
                                 if (tokens[i] == "location")
                                 {
                                     // check aregs first
+                                    LocationConfig Holder;
                                     i++;
                                     std::string name = tokens[i];
                                     if (name != "{")
@@ -430,6 +420,7 @@ int ConfigFile::TakeData()
                                         name = tokens[i];
                                         if (name == "methods")
                                         {
+                                            
                                             std::string  tokenn = Taker(tokens, i);
                                             std::cout << tokenn << "\n";
                                         }

@@ -31,6 +31,7 @@ void    Request::GetRequest() {}
 
 void    Request::validate(std::string PATH)
 {
-    
+    (void)PATH;
+
 }
 

@@ -9,15 +9,20 @@
 #include <sstream>
 #include <cstring>
 
+struct ReturnDirective {
+    int status_code;
+    std::string redirect_to;
+};
 
 struct LocationConfig {
     std::string path;              // e.g. "/images"
     std::string root;
+    std::vector<std::string> _return;
+    std::string methods;
     std::string index;
     bool autoindex;
     std::vector<LocationConfig> locations;
-
-    std::vector<std::string> methods;       // Allowed HTTP methods: GET, POST, DELETE
+    
     std::string upload_store;               // Path to save uploaded files
     std::map<std::string, std::string> cgi; // Map extension -> CGI interpreter path, e.g., {".php": "/usr/bin/php-cgi"}
     std::string redirection;                // URL to redirect to, if any
@@ -50,7 +55,6 @@ class ConfigFile
 
 private:
     std::vector<ServerConfig> servers;
-
     std::string fdline;
     std::vector<std::string> serverOnly;
     std::vector<std::string> locationOnly;
@@ -59,7 +63,6 @@ private:
 
 
 public:
-    ServerConfig defaultServer;
     ConfigFile();
     ~ConfigFile();
 
