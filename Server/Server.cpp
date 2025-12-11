@@ -266,7 +266,7 @@ int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
                 buffer[n] = '\0';
 
                 // the parcing should be in this buffer 'buffer'
-                mainRequest(buffer, fds[i].fd);
+                // mainRequest(buffer, fds[i].fd);
                 std::cout << "[DATA FROM " << fds[i].fd << "]\n"
                         << buffer << "\n";
                 // SIMPLE RESPONSE (for now)

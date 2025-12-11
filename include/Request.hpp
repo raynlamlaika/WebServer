@@ -18,9 +18,9 @@ class Request {
         
 
         void    GetParam(std::string line);
-        void    GetRequest(int fd);
+        // void    GetRequest(int fd);
         void    PostRequest(int fd, std::string line);
-        void     validate();
+        // void     validate();
         void     Readfile();
     public:
         Request();

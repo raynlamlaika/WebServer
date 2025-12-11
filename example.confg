@@ -1,4 +1,4 @@
-server 
+http{server 
 {
     listen 80;
     server_name example.com www.example.com;
@@ -6,6 +6,7 @@ server
     index index.html index.htm;
 
     location / {
+        path popoooiopoiop;
         root $uri $uri/ = 404;
     }
 
@@ -32,4 +33,4 @@ server {
         root X-Real-IP $remote_addr;
         return X-Real-IP $remote_addr;
     }
-}
+}}

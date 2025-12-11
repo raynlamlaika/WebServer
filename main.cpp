@@ -138,12 +138,13 @@ int main(int ac, char **av)
     }   
     if(Config->TakeData())
         ;
-
+    std::vector<ServerConfig> Conf = Config->servers;
+    printServers(Conf);
     // work with the defaut values
     // ConfigFile Conf;
     // std::vector<ServerConfig> k;
     // std::vector<ServerConfig> p =hard_code(k);
-    // printServers(p);
+    // 
 
     // Server *hh  = new Server();
     // hh->ServersPortsLoop(p);    
