@@ -117,7 +117,7 @@ std::vector<std::string> splitingConfg(const std::string &str)
     return result;
 }
 
-std::string Taker(const std::vector<std::string>& helo, size_t & i)
+std::string Taker(const std::vector<std::string>& helo, size_t &i)
 {
     std::string result;
 
@@ -196,7 +196,7 @@ int isDirevative(const std::string &str)
     "error_page", "client_max_body_size", "return"};
     static const char* loc[] = {
         "allow_methods", "autoindex", "upload_path",
-        "cgi_extension", "cgi_path", "redirection", "alias","proxy_pass", "proxy_set_header", "try_files", "path"
+        "cgi_extension", "cgi_path", "redirection", "alias","proxy_pass", "proxy_set_header", "try_files", "path", "methods"
     };
     
     for (int i = 0; dirs[i] ; i++)
@@ -230,7 +230,7 @@ int ConfigFile::helper(const std::vector<std::string>& tokens, size_t &i, Locati
     std::string name = tokens[i];
     if (name != "{")
     {
-        std::cout << "the path is :" << name << std::endl;
+        Holder.cgi_path = name;
         i++;
         if (tokens[i] == "{")
             i++;
@@ -241,21 +241,26 @@ int ConfigFile::helper(const std::vector<std::string>& tokens, size_t &i, Locati
     {
         name = tokens[i];
         if (name == "methods")
+        {
+            ++i;
             Holder.methods = Taker(tokens, i);
+        }
         else if (name == "root")
-            Holder.root = Taker(tokens, i);
+            Holder.root = Taker(tokens, ++i);
         else if (name == "index")
-            Holder.index = Taker(tokens, i);
+            Holder.index = Taker(tokens, ++i);
+        else if (name == "cgi_extension")
+            Holder.cgi_extension = Taker(tokens, ++i);
         else if (name == "autoindex")
-            Holder.autoindex = atoi(Taker(tokens, i).c_str());
+            Holder.autoindex = atoi(Taker(tokens, ++i).c_str());
         else if (name == "upload_store")
-            Holder.upload_store = Taker(tokens, i);
+            Holder.upload_store = Taker(tokens, ++i);
         else if (name == "cgi")
-            std::string  tokenn = Taker(tokens, i);
+            std::string  tokenn = Taker(tokens, ++i);
         else if (name == "return")
-            Holder._return = splitString(Taker(tokens, i), ' ');
+            Holder._return = splitString(Taker(tokens, ++i), ' ');
         else if (name == "path")
-            Holder.path = Taker(tokens, i);
+            Holder.path = Taker(tokens, ++i);
         i++;
     }
     return 1;
@@ -283,17 +288,17 @@ int ConfigFile::serverHelper(const std::vector<std::string>& tokens, size_t &i)
             {
                 std::string name = tokens[i];
                 if (name == "listen")
-                    servinfo.listen = splitString(Taker(tokens, i), ' ');
+                    servinfo.listen = splitString(Taker(tokens, ++i), ' ');
                 else if (name == "server_name")
-                    servinfo.server_name = Taker(tokens, i);
+                    servinfo.server_name = Taker(tokens, ++i);
                 else if (name == "root")
-                    servinfo.root = Taker(tokens, i);
+                    servinfo.root = Taker(tokens, ++i);
                 else if (name == "error_page")
-                    servinfo.error_page = Taker(tokens, i);
+                    servinfo.error_page = Taker(tokens, ++i);
                 else if (name == "client_max_body_size")
-                    servinfo.client_max_body_size = atoi(Taker(tokens, i).c_str());
+                    servinfo.client_max_body_size = atoi(Taker(tokens, ++i).c_str());
                 else if (name == "index")
-                    servinfo.index = Taker(tokens, i);
+                    servinfo.index = Taker(tokens, ++i);
                 i++;
             }
             if (tokens[i].find("location") != std::string::npos)

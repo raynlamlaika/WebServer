@@ -109,7 +109,9 @@ void printServers(const std::vector<ServerConfig>& servers)
             {
                 const LocationConfig& loc = srv.locations[li];
 
-                std::cout << "   Location #" << li << ":\n";
+                std::cout << "   Location #" << li << "\n";
+                std::cout << "       cgi_extension: " << loc.cgi_extension << "\n";
+                std::cout << "       cgi_path: " << loc.cgi_path << "\n";
                 std::cout << "       path: " << loc.path << "\n";
                 std::cout << "       root: " << loc.root << "\n";
                 std::cout << "       index: " << loc.index << "\n";
@@ -129,8 +131,6 @@ int main(int ac, char **av)
     (void)ac;
     (void)av;
     ConfigFile *Config = new ConfigFile();
-
-    std::cout << "----------------------->" << av[1] << std::endl;
     if (1 == Config->OpeningFile(av[1]))
     {
         std::cerr << " config file error" << std::endl;
@@ -138,21 +138,22 @@ int main(int ac, char **av)
     }   
     if(Config->TakeData())
         ;
-    std::vector<ServerConfig> Conf = Config->servers;
-    printServers(Conf);
+    std::vector<ServerConfig> p = Config->servers;
+    // printServers(Conf);
     // work with the defaut values
-    // ConfigFile Conf;
+    ConfigFile Conf;
     // std::vector<ServerConfig> k;
     // std::vector<ServerConfig> p =hard_code(k);
-    // 
+    printServers(p);
+    
 
-    // Server *hh  = new Server();
-    // hh->ServersPortsLoop(p);    
-    // // ServersPortsLoop(k);
+    Server *hh  = new Server();
+    hh->ServersPortsLoop(p);    
+    // ServersPortsLoop(k);
 
-    // // int server_fd = k.createServerSocket(bb);
+    // int server_fd = k.createServerSocket(bb);
 
-    // std::cout << "Server running...\n";
+    std::cout << "Server running...\n";
     // k.RunServer(server_fd);
 
     // close(server_fd);

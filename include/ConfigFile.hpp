@@ -14,6 +14,8 @@ struct LocationConfig {
     std::string root;
     std::vector<std::string> _return;
     std::string methods;
+    std::string cgi_extension;
+    std::string cgi_path;
     std::string index;
     bool autoindex;
     std::vector<LocationConfig> locations;
