@@ -266,15 +266,18 @@ int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
                 buffer[n] = '\0';
 
                 // the parcing should be in this buffer 'buffer'
-                // mainRequest(buffer, fds[i].fd);
+                mainRequest(buffer, fds[i].fd);
                 std::cout << "[DATA FROM " << fds[i].fd << "]\n"
                         << buffer << "\n";
+
+
+                        
                 // SIMPLE RESPONSE (for now)
                 // string = parce();
 
-                const char* reply = "HTTP/1.1 200 OK\r\nContent-Length: 10\r\n\r\nWorldHwllo";
-                send(fds[i].fd, reply, strlen(reply), 0);
-                close(fds[i].fd);
+                // const char* reply = "HTTP/1.1 200 OK\r\nContent-Length: 10\r\n\r\nWorldHwllo";
+                // send(fds[i].fd, reply, strlen(reply), 0);
+                // close(fds[i].fd);
             }
         }
     }
