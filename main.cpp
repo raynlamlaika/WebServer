@@ -137,7 +137,7 @@ int main(int ac, char **av)
         return 0;
     }   
     if(Config->TakeData())
-        ;
+    {;}
     std::vector<ServerConfig> p = Config->servers;
     // printServers(Conf);
     // work with the defaut values

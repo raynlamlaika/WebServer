@@ -8,7 +8,7 @@
 
 #define READINGBUFFER 1000
 
-class Server : Request
+class Server : Request , ConfigFile
 {
 private:
     int i;

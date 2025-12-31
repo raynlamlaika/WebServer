@@ -121,7 +121,7 @@ std::string Taker(const std::vector<std::string>& helo, size_t &i)
 {
     std::string result;
 
-    if (i < 0 || i >= helo.size())
+    if ((int)i < (0) || i >= helo.size())
         return result;
 
     for (size_t k = i; k < helo.size(); k++)

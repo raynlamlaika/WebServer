@@ -216,6 +216,7 @@ int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
     {
         // wait for the connection
         int event =	poll(fds.data(), fds.size(),-1);
+        int ServerId = -1; // check
         if (event < 0)
         {
             perror("poll");
@@ -226,7 +227,7 @@ int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
             // I LISTENING SOCKET (incoming client)
             if (fdToServerIndex.count(fds[i].fd) && (fds[i].revents & POLLIN))
             {
-                int ServerId = fdToServerIndex[fds[i].fd];
+                ServerId = fdToServerIndex[fds[i].fd];
                 int listeningFd = fds[i].fd;
                 struct sockaddr_in client_addr;
                 socklen_t client_len = sizeof(client_addr);
@@ -250,7 +251,7 @@ int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
             }
             
             // II CLIENT SOCKET READY TO READ
-            if (fds[i].revents & POLLIN)
+            if (fds[i].revents & POLLIN || ServerId != -1) // check why && isnt work
             {
                 char buffer[4096];
                 int n = recv(fds[i].fd, buffer, sizeof(buffer)-1, 0);
@@ -266,9 +267,10 @@ int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
                 buffer[n] = '\0';
 
                 // the parcing should be in this buffer 'buffer'
-                mainRequest(buffer, fds[i].fd);
-                std::cout << "[DATA FROM " << fds[i].fd << "]\n"
-                        << buffer << "\n";
+                mainRequest(buffer, fds[i].fd, cfg[ServerId]);
+    
+                // std::cout << "[DATA FROM " << fds[i].fd << "]\n"
+                //         << buffer << "\n";
 
 
                         

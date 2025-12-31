@@ -1,6 +1,6 @@
 server 
 {
-    listen 8088 9088 9800;
+    listen 9088 9800;
     server_name example.com www.example.com;
     root /var/www/html;
     error_page /var/www/html;
