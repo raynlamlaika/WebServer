@@ -5,15 +5,24 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 #include <sstream>
-
+#include <cstring>
 
 struct LocationConfig {
     std::string path;              // e.g. "/images"
     std::string root;
+    std::vector<std::string> _return;
+    std::string methods;
+    std::string cgi_extension;
+    std::string cgi_path;
     std::string index;
     bool autoindex;
     std::vector<LocationConfig> locations;
+    
+    std::string upload_store;               // Path to save uploaded files
+    std::map<std::string, std::string> cgi; // Map extension -> CGI interpreter path, e.g., {".php": "/usr/bin/php-cgi"}
+    std::string redirection;                // URL to redirect to, if any
 };
 
 
@@ -42,8 +51,7 @@ class ConfigFile
 
 
 private:
-    std::vector<ServerConfig> servers;
-
+    
     std::string fdline;
     std::vector<std::string> serverOnly;
     std::vector<std::string> locationOnly;
@@ -52,7 +60,7 @@ private:
 
 
 public:
-    ServerConfig defaultServer;
+    std::vector<ServerConfig> servers;
     ConfigFile();
     ~ConfigFile();
 
@@ -60,8 +68,13 @@ public:
     int OpeningFile(const char *FileName);
     int TakeData();
     void TakerD(std::vector<std::string>helo, int IndexStart ,int IndexEnd );
+    int helper(const std::vector<std::string>& tokens, size_t &i, LocationConfig & Holder);
+    int serverHelper(const std::vector<std::string>& tokens, size_t &i);
+
 };
 
 
+
+void printServers(const std::vector<ServerConfig>& servers);
 #endif
 
