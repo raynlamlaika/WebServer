@@ -5,12 +5,12 @@
 
 ConfigFile::ConfigFile()
 {
-    std::cout << "constracture is called \n";
+    // std::cout << "constracture is called \n";
 }
 
 ConfigFile::~ConfigFile()
 {
-    std::cout << "deconstracture is called \n";
+    // std::cout << "deconstracture is called \n";
 }
 
 int ConfigFile::OpeningFile(const char *FileName)
@@ -22,18 +22,18 @@ int ConfigFile::OpeningFile(const char *FileName)
     fdConfigF.open(FileName, std::ios::in);
     if (fdConfigF)
     {
-        std::cout << "file is opened! -> name :"<< FileName << std::endl;
+        // std::cout << "file is opened! -> name :"<< FileName << std::endl;
         fdline = std::string(
         (std::istreambuf_iterator<char>(fdConfigF)),
         std::istreambuf_iterator<char>());
 
         fdConfigF.close();
-        std::cout << "file is closed! -> name :"<< FileName << std::endl;
+        // std::cout << "file is closed! -> name :"<< FileName << std::endl;
         return (0);
     }
     else
     {
-        std::cerr << "error in opning the config file -> name:" << FileName <<  "|"<< std::endl;
+        // std::cerr << "error in opning the config file -> name:" << FileName <<  "|"<< std::endl;
         return (1);
     }
     return (0);
@@ -431,7 +431,7 @@ int ConfigFile::TakeData()
         else if (y == 2) // handel the server block
         {
             ServerConfig servinfo;
-            std::cout << "|"<< tokens[i+1] << "|\n";
+            // std::cout << "|"<< tokens[i+1] << "|\n";
             if (strcmp(tokens[i+1].c_str() ,"{") !=0)
                 return std::cerr << "Error: expected '{' after server\n", exit(1), 1;
             serverHelper( tokens, i);

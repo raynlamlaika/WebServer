@@ -68,37 +68,37 @@ void printServers(const std::vector<ServerConfig>& servers)
     {
         const ServerConfig& srv = servers[si];
 
-        std::cout << "=====================================\n";
-        std::cout << "SERVER #" << si << "\n";
-        std::cout << "=====================================\n\n";
+        // std::cout << "=====================================\n";
+        // std::cout << "SERVER #" << si << "\n";
+        // std::cout << "=====================================\n\n";
 
         // ------------------------------------
         // Listen Ports with indexes
         // ------------------------------------
-        std::cout << "Listen Ports:\n";
+        // std::cout << "Listen Ports:\n";
         for (size_t pi = 0; pi < srv.listen.size(); pi++)
         {
-            std::cout << "   [" << pi << "] " << srv.listen[pi] << "\n";
+            // std::cout << "   [" << pi << "] " << srv.listen[pi] << "\n";
         }
         if (srv.listen.empty())
             std::cout << "   (none)\n";
-        std::cout << "\n";
+        // std::cout << "\n";
 
         // ------------------------------------
         // Server fields
         // ------------------------------------
-        std::cout << "Server Configuration:\n";
-        std::cout << "   server_name: " << srv.server_name << "\n";
-        std::cout << "   root: " << srv.root << "\n";
-        std::cout << "   index: " << srv.index << "\n";
-        std::cout << "   error_page: " << srv.error_page << "\n";
-        std::cout << "   client_max_body_size: " << srv.client_max_body_size << "\n";
-        std::cout << "   autoindex: " << (srv.autoindex ? "on" : "off") << "\n\n";
+        // std::cout << "Server Configuration:\n";
+        // std::cout << "   server_name: " << srv.server_name << "\n";
+        // std::cout << "   root: " << srv.root << "\n";
+        // std::cout << "   index: " << srv.index << "\n";
+        // std::cout << "   error_page: " << srv.error_page << "\n";
+        // std::cout << "   client_max_body_size: " << srv.client_max_body_size << "\n";
+        // std::cout << "   autoindex: " << (srv.autoindex ? "on" : "off") << "\n\n";
 
         // ------------------------------------
         // Locations with indexes
         // ------------------------------------
-        std::cout << "Locations:\n";
+        // std::cout << "Locations:\n";
         if (srv.locations.empty())
         {
             std::cout << "   (none)\n";
@@ -107,19 +107,19 @@ void printServers(const std::vector<ServerConfig>& servers)
         {
             for (size_t li = 0; li < srv.locations.size(); li++)
             {
-                const LocationConfig& loc = srv.locations[li];
+                // const LocationConfig& loc = srv.locations[li];
 
-                std::cout << "   Location #" << li << "\n";
-                std::cout << "       cgi_extension: " << loc.cgi_extension << "\n";
-                std::cout << "       cgi_path: " << loc.cgi_path << "\n";
-                std::cout << "       path: " << loc.path << "\n";
-                std::cout << "       root: " << loc.root << "\n";
-                std::cout << "       index: " << loc.index << "\n";
-                std::cout << "       autoindex: " << (loc.autoindex ? "on" : "off") << "\n\n";
+                // std::cout << "   Location #" << li << "\n";
+                // std::cout << "       cgi_extension: " << loc.cgi_extension << "\n";
+                // std::cout << "       cgi_path: " << loc.cgi_path << "\n";
+                // std::cout << "       path: " << loc.path << "\n";
+                // std::cout << "       root: " << loc.root << "\n";
+                // std::cout << "       index: " << loc.index << "\n";
+                // std::cout << "       autoindex: " << (loc.autoindex ? "on" : "off") << "\n\n";
             }
         }
 
-        std::cout << "\n";
+        // std::cout << "\n";
     }
 }
 

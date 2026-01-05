@@ -1,34 +1,12 @@
-server 
-{
-    listen 9088 9800;
-    server_name example.com www.example.com;
-    root /var/www/html;
-    error_page /var/www/html;
-    index index.html index.htm;
-    client_max_body_size 09;
-    
-    location /bin/raaaaal {
-        cgi_extension .py;
-        path popoooiopoiop;
-        path popoooiopoiop;
-        path popoooiopoiop;
-        path popoooiopoiop;
-        path popoooiopoiop;
-        path popoooiopoiop;
-        path popoooiopoiop;
-        path popoooiopoiop;
-        path popoooiopoiop;
-        path popoooiopoiop;
-        index heloeloel ;
-        methods hehehehhehe;
-        root $uri $uri/ = 404;
-        return X-Real-IP $remote_addr;
+server {
+    listen 9080;
+
+    root ./www;
+    index index.html;
+    error_page /errors/404.html;
+
+    location / {
+        autoindex off;
     }
 
-    location /api/ {
-        root http://backend_server:8080;
-        root Host $host;
-        root X-Real-IP $remote_addr;
-        return X-Real-IP $remote_addr;
-    }
 }

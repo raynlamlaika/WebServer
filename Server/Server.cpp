@@ -180,109 +180,233 @@ int ServerListen(int port)
 }
 
 
+// int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
+// {
+//     std::vector<pollfd> fds;                 // All listening + client FDs here
+//     std::map<int, int>  fdToServerIndex;  // rememeber the port come from every server
+//     for (size_t i = 0; i < cfg.size() ; i++)
+//     {
+//         // std::cout <<   "server :" << i << std::endl;
+//         //servers will take the port from every one
+//         for (size_t j = 0;j < cfg[i].listen.size() ; j++)
+//         {
+//             //every port in server
+//             // printf()
+//             // std::cout <<   "helooo lo portr : "<<cfg[i].listen[j] <<std::endl;
+//             //creation on the port listen
+//             int  port =  atoi(cfg[i].listen[j].c_str());
+//             int FdSocket = ServerListen(port);
+            
+//             struct pollfd ServActions;
+//             ServActions.events =  POLLIN;
+//             ServActions.fd  = FdSocket;
+//             ServActions.revents = 0;
+
+//             // std::vector<struct pollfd> clients;
+//             fds.push_back(ServActions);
+//             fdToServerIndex[FdSocket] = i;
+//             std::cout << "[Listening] Server " << i
+//                       << " on port " << port
+//                       << " (fd=" << FdSocket << ")\n";
+//         }
+//     }
+
+
+//     while (42)
+//     {
+//         // wait for the connection
+//         int event =	poll(fds.data(), fds.size(),-1);
+//         int ServerId = -1; // check
+//         if (event < 0)
+//         {
+//             perror("poll");
+//             continue;
+//         }
+//         for (int i = 0 ; i < (int)fds.size(); i++)
+//         {
+//             // I LISTENING SOCKET (incoming client)
+//             if (fdToServerIndex.count(fds[i].fd) && (fds[i].revents & POLLIN))
+//             {
+//                 ServerId = fdToServerIndex[fds[i].fd];
+//                 int listeningFd = fds[i].fd;
+//                 struct sockaddr_in client_addr;
+//                 socklen_t client_len = sizeof(client_addr);
+
+
+//                 int clientfd = accept(listeningFd, (struct sockaddr *) &client_addr , &client_len);
+//                 if (clientfd < 0)
+//                 {
+//                     perror("can't tke the client with accest");
+//                     continue;
+//                 }
+//                 struct pollfd cli;
+//                 cli.fd  = clientfd;
+//                 cli.events =  POLLIN;
+//                 cli.revents = 0;
+
+//                 fds.push_back(cli);
+//                 std::cout << "[ACCEPT] Client FD " << clientfd
+//                       << " for server #" << ServerId << "\n";
+//                 continue;
+//             }
+            
+//             // II CLIENT SOCKET READY TO READ
+//             if (fds[i].revents & POLLIN || ServerId != -1) // check why && isnt work
+//             {
+//                 char buffer[4096];
+//                 int n = recv(fds[i].fd, buffer, sizeof(buffer)-1, 0);
+//                 if (n <= 0)
+//                 {
+//                     // Client disconnected
+//                     std::cout << "[DISCONNECT] client " << fds[i].fd << "\n";
+//                     close(fds[i].fd);
+//                     fds.erase(fds.begin() + i);
+//                     i--;
+//                     continue;
+//                 }
+//                 buffer[n] = '\0';
+//                 std::cout << "SERVER COUNT = " << cfg.size() << " " << ServerId << std::endl;
+//                 // the parcing should be in this buffer 'buffer'
+//                 mainRequest(buffer, fds[i].fd, cfg[ServerId]);
+    
+//                 // std::cout << "[DATA FROM " << fds[i].fd << "]\n"
+//                 //         << buffer << "\n";
+
+
+                        
+//                 // SIMPLE RESPONSE (for now)
+//                 // string = parce();
+
+//                 // const char* reply = "HTTP/1.1 200 OK\r\nContent-Length: 10\r\n\r\nWorldHwllo";
+//                 // send(fds[i].fd, reply, strlen(reply), 0);
+//                 // close(fds[i].fd);
+//             }
+//         }
+//     }
+//     return 1;
+
+// }
+
+
 int Server::ServersPortsLoop(std::vector<ServerConfig>& cfg)
 {
-    std::vector<pollfd> fds;                 // All listening + client FDs here
-    std::map<int, int>  fdToServerIndex;  // rememeber the port come from every server
-    for (size_t i = 0; i < cfg.size() ; i++)
-    {
-        // std::cout <<   "server :" << i << std::endl;
-        //servers will take the port from every one
-        for (size_t j = 0;j < cfg[i].listen.size() ; j++)
-        {
-            //every port in server
-            // printf()
-            // std::cout <<   "helooo lo portr : "<<cfg[i].listen[j] <<std::endl;
-            //creation on the port listen
-            int  port =  atoi(cfg[i].listen[j].c_str());
-            int FdSocket = ServerListen(port);
-            
-            struct pollfd ServActions;
-            ServActions.events =  POLLIN;
-            ServActions.fd  = FdSocket;
-            ServActions.revents = 0;
+    std::cout << "Hello" << std::endl;
 
-            // std::vector<struct pollfd> clients;
-            fds.push_back(ServActions);
-            fdToServerIndex[FdSocket] = i;
-            std::cout << "[Listening] Server " << i
-                      << " on port " << port
-                      << " (fd=" << FdSocket << ")\n";
+    std::vector<pollfd> fds;
+    std::map<int, int> fdToServerIndex;       // listening fd -> server index
+    std::map<int, int> clientToServerIndex;   // client fd -> server index
+
+    // ===============================
+    // CREATE LISTENING SOCKETS
+    // ===============================
+    for (size_t i = 0; i < cfg.size(); i++)
+    {
+        for (size_t j = 0; j < cfg[i].listen.size(); j++)
+        {
+            int port = atoi(cfg[i].listen[j].c_str());
+            int listenFd = ServerListen(port);
+
+            pollfd pfd;
+            pfd.fd = listenFd;
+            pfd.events = POLLIN;
+            pfd.revents = 0;
+
+            fds.push_back(pfd);
+            fdToServerIndex[listenFd] = i;
+
+            std::cout << "[LISTEN] server "<< i << " is running on port "
+                      << port << std::endl;
+                    //   << " fd =" << listenFd << std::endl;
         }
     }
 
-
-    while (42)
+    // ===============================
+    // MAIN LOOP
+    // ===============================
+    while (true)
     {
-        // wait for the connection
-        int event =	poll(fds.data(), fds.size(),-1);
-        int ServerId = -1; // check
-        if (event < 0)
+        int ret = poll(fds.data(), fds.size(), -1);
+        if (ret < 0)
         {
             perror("poll");
             continue;
         }
-        for (int i = 0 ; i < (int)fds.size(); i++)
+
+        for (size_t i = 0; i < fds.size(); i++)
         {
-            // I LISTENING SOCKET (incoming client)
-            if (fdToServerIndex.count(fds[i].fd) && (fds[i].revents & POLLIN))
+            if (!(fds[i].revents & POLLIN))
+                continue;
+
+            int fd = fds[i].fd;
+
+            // ===============================
+            // LISTENING SOCKET → ACCEPT
+            // ===============================
+            if (fdToServerIndex.count(fd))
             {
-                ServerId = fdToServerIndex[fds[i].fd];
-                int listeningFd = fds[i].fd;
-                struct sockaddr_in client_addr;
+                int serverId = fdToServerIndex[fd];
+
+                sockaddr_in client_addr;
                 socklen_t client_len = sizeof(client_addr);
 
+                int clientfd = accept(fd,
+                    (struct sockaddr *)&client_addr, &client_len);
 
-                int clientfd = accept(listeningFd, (struct sockaddr *) &client_addr , &client_len);
                 if (clientfd < 0)
                 {
-                    perror("can't tke the client with accest");
+                    perror("accept");
                     continue;
                 }
-                struct pollfd cli;
-                cli.fd  = clientfd;
-                cli.events =  POLLIN;
+
+                pollfd cli;
+                cli.fd = clientfd;
+                cli.events = POLLIN;
                 cli.revents = 0;
 
                 fds.push_back(cli);
-                std::cout << "[ACCEPT] Client FD " << clientfd
-                      << " for server #" << ServerId << "\n";
-                continue;
+                clientToServerIndex[clientfd] = serverId;
+
+                std::cout << "[\033[32mACCEPT\033[0m] client "
+                    << " -> server "
+                    << serverId ;
+                // << clientfd
             }
-            
-            // II CLIENT SOCKET READY TO READ
-            if (fds[i].revents & POLLIN || ServerId != -1) // check why && isnt work
+            // ===============================
+            // CLIENT SOCKET → READ REQUEST
+            // ===============================
+            else
             {
+                if (clientToServerIndex.count(fd) == 0)
+                {
+                    std::cerr << "Unknown client fd " << fd << std::endl;
+                    continue;
+                }
+
+                int serverId = clientToServerIndex[fd];
+
                 char buffer[4096];
-                int n = recv(fds[i].fd, buffer, sizeof(buffer)-1, 0);
+                int n = recv(fd, buffer, sizeof(buffer) - 1, 0);
+
                 if (n <= 0)
                 {
-                    // Client disconnected
-                    std::cout << "[DISCONNECT] client " << fds[i].fd << "\n";
-                    close(fds[i].fd);
+                    std::cout << "[\033[31mDISCONNECT\033[0m] client " << fd << std::endl;
+                    close(fd);
+                    clientToServerIndex.erase(fd);
                     fds.erase(fds.begin() + i);
                     i--;
                     continue;
                 }
+
                 buffer[n] = '\0';
 
-                // the parcing should be in this buffer 'buffer'
-                mainRequest(buffer, fds[i].fd, cfg[ServerId]);
-    
-                // std::cout << "[DATA FROM " << fds[i].fd << "]\n"
-                //         << buffer << "\n";
+                // std::cout << "[REQUEST] client "
+                //           << fd
+                //           << " server "
+                //           << serverId << std::endl;
 
-
-                        
-                // SIMPLE RESPONSE (for now)
-                // string = parce();
-
-                // const char* reply = "HTTP/1.1 200 OK\r\nContent-Length: 10\r\n\r\nWorldHwllo";
-                // send(fds[i].fd, reply, strlen(reply), 0);
-                // close(fds[i].fd);
+                MainRequest(buffer, fd, cfg.at(serverId));
             }
         }
     }
-    return 1;
-
+    return 0;
 }
