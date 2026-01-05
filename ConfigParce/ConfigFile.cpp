@@ -201,13 +201,13 @@ int isDirevative(const std::string &str)
     
     for (int i = 0; dirs[i] ; i++)
     {
-        if (strcmp(str.c_str(), dirs[i]) == 0)
+        if (str == dirs[i])
             return  1;
 
     }
     for (int j = 0; loc[j] ; j++)
     {
-        if (strncmp(str.c_str(), loc[j], strlen(str.c_str())) == 0)
+        if (str == loc[j])
             return  2;
     }
     return 0;

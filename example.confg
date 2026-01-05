@@ -1,4 +1,5 @@
-server {
+server
+{
     listen 9080;
 
     root ./www;

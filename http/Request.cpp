@@ -1,6 +1,7 @@
 #include "../include/Request.hpp"
 
-Request::Request() : _METHOD(""), _PATH(""), _OLDPATH(""), _CONTENT(""), _SIZE(0) {}
+Request::Request() : _METHOD(""), _PATH(""), _OLDPATH(""), _CONTENT("")//, _SIZE(0) 
+{}
 
 
 void Request::MainRequest(const std::string &line, int fd, const ServerConfig &servers)

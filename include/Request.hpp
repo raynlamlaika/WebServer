@@ -49,7 +49,7 @@ private:
     std::string _PATH;       // Full path to the file on disk
     std::string _OLDPATH;    // Original requested path (for logging)
     std::string _CONTENT;    // File content
-    size_t      _SIZE;       // File size
+    // size_t      _SIZE;       // File size
 };
 
 #endif // REQUEST_HPP
