@@ -1,16 +1,8 @@
 #ifndef ITER_HPP
 # define ITER_HPP
 
-
 #include <iostream>
 #include <unistd.h>
-
-// template <typename T>
-// void func(T const &var1)
-// {   
-//     std::cout << "allo allo elems: " << var1 << std::endl;
-
-// }
 
 template <typename T,typename Func_helper>
 void iter(T *arr, const int len, Func_helper func)

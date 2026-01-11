@@ -5,7 +5,7 @@ SRC =   main.cpp
 OBJ = $(SRC:.cpp=.o)
 
 CPP = c++
-CFLAGS = -std=c++98 #-Wall -Werror -Wextra 
+CFLAGS = -std=c++98 -Wall -Werror -Wextra 
 
 HEADER = iter.hpp 
 
